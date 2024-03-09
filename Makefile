@@ -33,7 +33,7 @@ dev: ## start
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 		yarn dev )
 
-publish-web: build ## publish to web
+publish: build ## publish to web
 	@exec echo PUBLISH WEB
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 	  aws s3 cp \
