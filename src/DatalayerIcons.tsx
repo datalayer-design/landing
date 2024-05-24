@@ -239,7 +239,7 @@ const DatalayerIcons = () => {
     <>
       <ThemeProvider dayScheme="light" nightScheme="dark_dimmed">
         <BaseStyles>
-          <CloseableFlash leadingIcon={AlertIcon} variant="warning">
+          <CloseableFlash leadingVisual={AlertIcon} variant="warning">
             Some of our icons may not be 100% compatible with existing design guidelines.
             Please open an issue on <Link href="https://github.com/datalayer/icons/issues">https://github.com/datalayer/icons/issues</Link> to help with that.
           </CloseableFlash>
