@@ -278,14 +278,14 @@ const DatalayerIcons = () => {
             <MinimalFooter.Link href="https://datalayer.io" target="_blank">
               Datalayer
             </MinimalFooter.Link>
-            <MinimalFooter.Link href="https://datalayer.run" target="_blank">
-              Run
-            </MinimalFooter.Link>
-            <MinimalFooter.Link href="https://datalayer.io" target="_blank">
-              App
-            </MinimalFooter.Link>
             <MinimalFooter.Link href="https://datalayer.tech" target="_blank">
               Tech
+            </MinimalFooter.Link>
+            <MinimalFooter.Link href="https://datalayer.guide" target="_blank">
+              Guide
+            </MinimalFooter.Link>
+            <MinimalFooter.Link href="https://datalayer.blog" target="_blank">
+              Blog
             </MinimalFooter.Link>
           </MinimalFooter>
         </BaseStyles>
