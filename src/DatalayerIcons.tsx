@@ -37,7 +37,7 @@ const IconLine = (props: { name: string, icon: any}) => {
     if (ref.current === null) {
       return
     }
-    toPng(ref.current, { cacheBust: true, })
+    toPng(ref.current, { cacheBust: true, width: 1000, height: 1000 })
       .then((dataUrl: string) => {
         const link = document.createElement('a');
         link.download = `${name}_${type}.png`;
