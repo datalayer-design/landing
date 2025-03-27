@@ -22,16 +22,16 @@ help: ## display this help
 clean: ## clean
 	@exec echo CLEAN
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		yarn clean )
+		npm clean )
 
 build: ## build all modules
 	@exec echo BUILD
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		yarn build )
+		npm run build )
 
 dev: ## start
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		yarn dev )
+		npm dev )
 
 deploy: build ## deploy to web
 	@exec echo PUBLISH WEB
