@@ -153,7 +153,7 @@ const IconSummary = (props: { name: string, icon: any }) => {
   const IconComponent = icon;
   return (
     <Box mr={1}>
-      <Tooltip aria-label={name}>
+      <Tooltip text={name} aria-label={name}>
         <IconComponent colored size="large" ref={refSvg} />
       </Tooltip>
     </Box>
