@@ -38,11 +38,11 @@ deploy: build ## deploy to web
 	($(CONDA_ACTIVATE) ${ENV_NAME}; \
 	  aws s3 cp \
 		./dist \
-		s3://datalayer-design/ \
+		s3://datalayer-design-icons/ \
 		--recursive \
 		--profile datalayer && \
 	  aws cloudfront create-invalidation \
-		--distribution-id E303GZGZVTY01Q \
+		--distribution-id E12PM8QRYHDUSR \
 		--paths "/*" \
 		--profile datalayer && \
-	echo open ✨  https://datalayer.design )
+	echo open ✨  https://icons.datalayer.design )
