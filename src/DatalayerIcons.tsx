@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import {
   ThemeProvider,
+  BaseStyles,
   IconButton,
   Text,
   Box,
@@ -14,6 +15,8 @@ import {
 import { SearchIcon } from '@primer/octicons-react';
 import {
   useColorPalette,
+  useThemeStore,
+  getColorPalette,
 } from '@datalayer/primer-addons';
 import { toPng, toSvg } from 'html-to-image';
 import styled from 'styled-components';
@@ -35,6 +38,10 @@ const BorderStyle = styled.span`
 
 const IconLine = (props: { name: string, icon: any }) => {
   const { name, icon } = props;
+  const palette = useColorPalette();
+  const { theme } = useThemeStore();
+  const inversePreviewMode: 'day' | 'night' = palette.isLight ? 'night' : 'day';
+  const inversePalette = getColorPalette(theme, palette.isLight ? 'dark' : 'light');
   const refColored = useRef<any>(null);
   const refDayColoredStyled = useRef<any>(null);
   const refNightColredStyled = useRef<any>(null);
@@ -104,13 +111,28 @@ const IconLine = (props: { name: string, icon: any }) => {
         </SpanStyle>
       </BorderStyle>
       <BorderStyle>
-        <SpanStyle>
-          <span>
-            <ThemeProvider colorMode="night">
-              <IconComponent size="large" style={{ color: 'rgb(173, 186, 199)' }} />
-            </ThemeProvider>
-          </span>
-        </SpanStyle>
+        <Box sx={{ display: 'inline-flex', mr: '25px' }}>
+          <ThemeProvider colorMode={inversePreviewMode}>
+            <BaseStyles style={{ display: 'inline-flex' }}>
+              <Box
+                as="span"
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  p: 1,
+                  borderRadius: 2,
+                  backgroundColor: inversePalette.bg,
+                  border: '1px solid',
+                  borderColor: inversePalette.primary,
+                  '--datalayer-icon-fg': inversePalette.primary,
+                }}
+              >
+                <IconComponent colored size="large" inverseColormode={inversePreviewMode === 'night' ? 'dark' : 'light'} />
+              </Box>
+            </BaseStyles>
+          </ThemeProvider>
+        </Box>
       </BorderStyle>
       <ThemeProvider colorMode="day">
         <IconButton aria-labelledby="" size="medium" sx={{marginRight: '15px'}} icon={ColoredStyledIcon} ref={refDayColoredStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refDayColoredStyled, 'day_colored')}/>
@@ -299,6 +321,19 @@ const DatalayerIcons = () => {
           <Text as="p" sx={{ m: 0 }}>
             Click on PNG or SVG to download an icon. Filter by name to inspect a single icon. Sources are in the{' '}
             <Link href="https://github.com/datalayer/icons" target="_blank">datalayer/icons repository</Link>.
+          </Text>
+          <Text as="p" sx={{ mt: 2, mb: 0, color: 'fg.muted' }}>
+            Preview columns configuration: (1) themed colored icon, (2) themed colored icon with border, (3) themed plain icon, (4) themed previewed in inverse colormode.
+          </Text>
+          <Text as="p" sx={{ mt: 1, mb: 0, color: 'fg.muted' }}>
+            Open{' '}
+            <Link
+              href="https://github.com/datalayer/icons/blob/main/README.md"
+              target="_blank"
+            >
+              code example
+            </Link>
+            {' '}for a concrete usage snippet.
           </Text>
         </Box>
 
