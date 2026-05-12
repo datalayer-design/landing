@@ -121,7 +121,7 @@ const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
 
 const DATALAYER_SVGS: SvgEntry[] = [
   ...DATALAYER_SVG_GALLERY
-    .map((name) => {
+    .map((name): SvgEntry | null => {
       const component = (SvgAssets as Record<string, unknown>)[name];
       if (typeof component !== 'function' && !SVG_COMPONENT_OVERRIDES[name]) {
         return null;
@@ -131,7 +131,7 @@ const DATALAYER_SVGS: SvgEntry[] = [
         Component: SVG_COMPONENT_OVERRIDES[name] || (component as SvgComponent),
       };
     })
-    .filter((entry): entry is SvgEntry => Boolean(entry)),
+    .filter((entry): entry is SvgEntry => entry !== null),
 ];
 
 async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 'svg' | 'png' | 'jpg') {

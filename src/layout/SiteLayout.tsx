@@ -56,11 +56,23 @@ export function SiteLayout() {
       >
         <Box sx={{ maxWidth: 1200, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 3, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 28 }}>
-            <DatalayerLogoText
-              size={logoSize}
-              variant={theme}
-              colorMode={colorMode as 'light' | 'dark' | 'auto'}
-            />
+            <Link
+              as={RouterLink}
+              to="/"
+              aria-label="Go to home"
+              sx={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                textDecoration: 'none',
+                ':hover': { textDecoration: 'none' },
+              }}
+            >
+              <DatalayerLogoText
+                size={logoSize}
+                variant={theme}
+                colorMode={colorMode as 'light' | 'dark' | 'auto'}
+              />
+            </Link>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
             <Box as="nav" sx={{ display: 'flex', gap: 2 }}>
