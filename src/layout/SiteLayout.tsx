@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Box, Link, Text } from '@primer/react';
 import { AppearanceControlsWithStore, useThemeStore } from '@datalayer/primer-addons';
 import { DatalayerLogoText } from '@datalayer/primer-addons';
@@ -16,6 +17,27 @@ const NAV_ITEMS: NavItem[] = [
 
 export function SiteLayout() {
   const location = useLocation();
+  const { colorMode, theme } = useThemeStore();
+  const [logoSize, setLogoSize] = useState(26);
+
+  useEffect(() => {
+    const applyLogoSize = () => {
+      const width = window.innerWidth;
+      if (width < 544) {
+        setLogoSize(20);
+      } else if (width < 768) {
+        setLogoSize(22);
+      } else {
+        setLogoSize(26);
+      }
+    };
+
+    applyLogoSize();
+    window.addEventListener('resize', applyLogoSize);
+    return () => {
+      window.removeEventListener('resize', applyLogoSize);
+    };
+  }, []);
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bg: 'canvas.default' }}>
@@ -34,7 +56,11 @@ export function SiteLayout() {
       >
         <Box sx={{ maxWidth: 1200, mx: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 3, flexWrap: 'wrap' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', minHeight: 28 }}>
-            <DatalayerLogoText size={26} />
+            <DatalayerLogoText
+              size={logoSize}
+              variant={theme}
+              colorMode={colorMode as 'light' | 'dark' | 'auto'}
+            />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, flexWrap: 'wrap' }}>
             <Box as="nav" sx={{ display: 'flex', gap: 2 }}>

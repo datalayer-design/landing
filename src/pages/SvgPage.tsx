@@ -1,6 +1,7 @@
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Heading, Text } from '@primer/react';
+import { useColorPalette } from '@datalayer/primer-addons';
 import * as SvgAssets from '@datalayer/ui/lib/assets/svg';
 import SpitfireAssetUrl from '@datalayer/ui/lib/assets/images/legacy/releases/datalayer-1.3.0-spitfire.svg';
 
@@ -9,28 +10,137 @@ type SvgComponent = (props?: any) => JSX.Element;
 type SvgEntry = {
   name: string;
   Component: SvgComponent;
-  assetUrl?: string;
 };
+
+const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
 
 const PHARMACIE_BAYART_SVG_NAMES = new Set([
   'SvgPharmacieBayartLogo',
   'SvgPharmacieBayartHero',
 ]);
 
-const SVG_ASSET_OVERRIDES: Record<string, string> = {
-  SvgSpitfire: SpitfireAssetUrl,
+function SvgSpitfireInline() {
+  const p = useColorPalette();
+  const tint = p.isLight ? p.primary : p.spark;
+  const [svgMarkup, setSvgMarkup] = useState<string>('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAndTint = async () => {
+      const response = await fetch(SpitfireAssetUrl);
+      const source = await response.text();
+      if (cancelled) {
+        return;
+      }
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(source, 'image/svg+xml');
+      const svg = doc.querySelector('svg');
+
+      if (!svg) {
+        setSvgMarkup(source);
+        return;
+      }
+
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', '100%');
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svg.setAttribute('style', `width:100%;height:100%;display:block;background:${p.bg};`);
+
+      const blackFills = new Set(['#000', '#000000', 'black', 'rgb(0,0,0)']);
+      doc.querySelectorAll('[fill]').forEach((node) => {
+        const fill = (node.getAttribute('fill') || '').replace(/\s+/g, '').toLowerCase();
+        if (blackFills.has(fill)) {
+          node.setAttribute('fill', tint);
+        }
+      });
+
+      doc.querySelectorAll('[stroke]').forEach((node) => {
+        const stroke = (node.getAttribute('stroke') || '').replace(/\s+/g, '').toLowerCase();
+        if (blackFills.has(stroke)) {
+          node.setAttribute('stroke', tint);
+        }
+      });
+
+      const serialized = new XMLSerializer().serializeToString(svg);
+      setSvgMarkup(serialized);
+    };
+
+    loadAndTint().catch(() => setSvgMarkup(''));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [p.bg, tint]);
+
+  return (
+    <Box
+      aria-label="Spitfire aircraft"
+      sx={{
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        overflow: 'hidden',
+      }}
+      dangerouslySetInnerHTML={{ __html: svgMarkup }}
+    />
+  );
+}
+
+function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
+  const p = useColorPalette();
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Lines logo"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <BaseSvgLinesLogo
+        height={42}
+        colored
+        primaryColor={p.primary}
+        secondaryColor={p.secondary}
+        textColor={p.secondary}
+      />
+    </Box>
+  );
+}
+
+const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
+  SvgSpitfire: SvgSpitfireInline,
+  SvgLinesLogo,
 };
 
-const DATALAYER_SVGS: SvgEntry[] = Object.entries(SvgAssets)
+const CUSTOM_SVGS: SvgEntry[] = [
+  {
+    name: 'SvgLinesLogo',
+    Component: SvgLinesLogo,
+  },
+];
+
+const DATALAYER_SVGS: SvgEntry[] = [
+  ...CUSTOM_SVGS,
+  ...Object.entries(SvgAssets)
   .filter(([name, value]) => /^Svg[A-Z]/.test(name) && typeof value === 'function' && !PHARMACIE_BAYART_SVG_NAMES.has(name))
   .map(([name, Component]) => ({
     name,
-    Component: Component as SvgComponent,
-    assetUrl: SVG_ASSET_OVERRIDES[name],
-  }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+    Component: SVG_COMPONENT_OVERRIDES[name] || (Component as SvgComponent),
+  })),
+].sort((a, b) => a.name.localeCompare(b.name));
 
-async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 'svg' | 'png') {
+async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 'svg' | 'png' | 'jpg') {
   const clone = svg.cloneNode(true) as SVGSVGElement;
   const rect = svg.getBoundingClientRect();
   const width = Math.max(1, Math.round(rect.width));
@@ -54,6 +164,8 @@ async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 
 
   const blob = new Blob([markup], { type: 'image/svg+xml;charset=utf-8' });
   const url = URL.createObjectURL(blob);
+  const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
+  const extension = format === 'jpg' ? 'jpg' : 'png';
   await new Promise<void>((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
@@ -71,17 +183,17 @@ async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 
       canvas.toBlob((output) => {
         URL.revokeObjectURL(url);
         if (!output) {
-          reject(new Error('Unable to export PNG'));
+          reject(new Error(`Unable to export ${format.toUpperCase()}`));
           return;
         }
         const outUrl = URL.createObjectURL(output);
         const link = document.createElement('a');
         link.href = outUrl;
-        link.download = `${fileName}.png`;
+        link.download = `${fileName}.${extension}`;
         link.click();
         URL.revokeObjectURL(outUrl);
         resolve();
-      }, 'image/png');
+      }, mimeType, 0.95);
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -91,34 +203,70 @@ async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 
   });
 }
 
-function SvgCard({ name, Component, assetUrl }: SvgEntry) {
+function SvgCard({ name, Component }: SvgEntry) {
   const navigate = useNavigate();
   const ref = useRef<HTMLDivElement | null>(null);
+  const openDetail = () => navigate(`/svg/${name}`);
 
   return (
     <Box sx={{ border: '1px solid', borderColor: 'border.default', borderRadius: 2, p: 3, bg: 'canvas.default' }}>
       <Text sx={{ fontWeight: 600, display: 'block', mb: 2 }}>{name}</Text>
-      <Box ref={ref} sx={{ p: 2, border: '1px dashed', borderColor: 'border.default', borderRadius: 2, minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, overflow: 'hidden', position: 'relative', isolation: 'isolate' }}>
-        {assetUrl ? (
-          <img
-            src={assetUrl}
-            alt={name}
-            style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-          />
-        ) : (
-          <Component style={{ width: '100%', height: '100%' }} />
-        )}
+      <Box
+        ref={ref}
+        role="button"
+        tabIndex={0}
+        aria-label={`Open ${name}`}
+        onClick={openDetail}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            openDetail();
+          }
+        }}
+        sx={{
+          p: 2,
+          border: '1px dashed',
+          borderColor: 'border.default',
+          borderRadius: 2,
+          minHeight: 160,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          mb: 2,
+          overflow: 'hidden',
+          position: 'relative',
+          isolation: 'isolate',
+          cursor: 'pointer',
+          ':hover': {
+            borderColor: 'accent.fg',
+            bg: 'canvas.subtle',
+          },
+          ':focus-visible': {
+            outline: '2px solid',
+            outlineColor: 'accent.fg',
+            outlineOffset: '2px',
+          },
+        }}
+      >
+        <Component style={{ width: '100%', height: '100%' }} />
       </Box>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <Button onClick={() => navigate(`/svg/${name}`)}>View</Button>
-        <Button disabled={Boolean(assetUrl)} onClick={async () => {
+        <Button onClick={openDetail}>View</Button>
+        <Button onClick={async () => {
           const svg = ref.current?.querySelector('svg');
           if (!svg) return;
           await downloadSvgElement(svg, name, 'png');
         }}>
           Download PNG
         </Button>
-        <Button disabled={Boolean(assetUrl)} onClick={async () => {
+        <Button onClick={async () => {
+          const svg = ref.current?.querySelector('svg');
+          if (!svg) return;
+          await downloadSvgElement(svg, name, 'jpg');
+        }}>
+          Download JPG
+        </Button>
+        <Button onClick={async () => {
           const svg = ref.current?.querySelector('svg');
           if (!svg) return;
           await downloadSvgElement(svg, name, 'svg');
@@ -134,6 +282,7 @@ function SvgDetailPage() {
   const navigate = useNavigate();
   const { name } = useParams<{ name?: string }>();
   const entry = useMemo(() => DATALAYER_SVGS.find((item) => item.name === name), [name]);
+  const ref = useRef<HTMLDivElement | null>(null);
 
   if (!entry) {
     return (
@@ -147,18 +296,36 @@ function SvgDetailPage() {
 
   return (
     <Box sx={{ maxWidth: 1200, mx: 'auto', px: 4, py: 5 }}>
-      <Button onClick={() => navigate('/svg')}>Back</Button>
+      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+        <Button onClick={() => navigate('/svg')}>Back</Button>
+        <Button onClick={async () => {
+          const svg = ref.current?.querySelector('svg');
+          if (!svg) return;
+          await downloadSvgElement(svg, entry.name, 'png');
+        }}>
+          Download PNG
+        </Button>
+        <Button onClick={async () => {
+          const svg = ref.current?.querySelector('svg');
+          if (!svg) return;
+          await downloadSvgElement(svg, entry.name, 'jpg');
+        }}>
+          Download JPG
+        </Button>
+        <Button onClick={async () => {
+          const svg = ref.current?.querySelector('svg');
+          if (!svg) return;
+          await downloadSvgElement(svg, entry.name, 'svg');
+        }}>
+          Download SVG
+        </Button>
+      </Box>
       <Heading as="h2" sx={{ mt: 3, mb: 3 }}>{entry.name}</Heading>
-      <Box sx={{ p: 4, border: '1px solid', borderColor: 'border.default', borderRadius: 2, display: 'flex', justifyContent: 'center', minHeight: 280, overflow: 'hidden', position: 'relative', isolation: 'isolate' }}>
-        {entry.assetUrl ? (
-          <img
-            src={entry.assetUrl}
-            alt={entry.name}
-            style={{ width: '100%', maxWidth: 900, height: 'auto', display: 'block' }}
-          />
-        ) : (
-          <Component style={{ width: '100%', maxWidth: 900 }} />
-        )}
+      <Box
+        ref={ref}
+        sx={{ p: 4, border: '1px solid', borderColor: 'border.default', borderRadius: 2, display: 'flex', justifyContent: 'center', minHeight: 280, overflow: 'hidden', position: 'relative', isolation: 'isolate' }}
+      >
+        <Component style={{ width: '100%', maxWidth: 900 }} />
       </Box>
     </Box>
   );
