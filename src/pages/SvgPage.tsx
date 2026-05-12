@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Heading, Text } from '@primer/react';
 import { useColorPalette } from '@datalayer/primer-addons';
+import { DATALAYER_SVG_GALLERY } from '@datalayer/ui/lib/assets/svg';
 import * as SvgAssets from '@datalayer/ui/lib/assets/svg';
 import SpitfireAssetUrl from '@datalayer/ui/lib/assets/images/legacy/releases/datalayer-1.3.0-spitfire.svg';
 
@@ -13,11 +14,6 @@ type SvgEntry = {
 };
 
 const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
-
-const PHARMACIE_BAYART_SVG_NAMES = new Set([
-  'SvgPharmacieBayartLogo',
-  'SvgPharmacieBayartHero',
-]);
 
 function SvgSpitfireInline() {
   const p = useColorPalette();
@@ -123,22 +119,20 @@ const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgLinesLogo,
 };
 
-const CUSTOM_SVGS: SvgEntry[] = [
-  {
-    name: 'SvgLinesLogo',
-    Component: SvgLinesLogo,
-  },
-];
-
 const DATALAYER_SVGS: SvgEntry[] = [
-  ...CUSTOM_SVGS,
-  ...Object.entries(SvgAssets)
-  .filter(([name, value]) => /^Svg[A-Z]/.test(name) && typeof value === 'function' && !PHARMACIE_BAYART_SVG_NAMES.has(name))
-  .map(([name, Component]) => ({
-    name,
-    Component: SVG_COMPONENT_OVERRIDES[name] || (Component as SvgComponent),
-  })),
-].sort((a, b) => a.name.localeCompare(b.name));
+  ...DATALAYER_SVG_GALLERY
+    .map((name) => {
+      const component = (SvgAssets as Record<string, unknown>)[name];
+      if (typeof component !== 'function' && !SVG_COMPONENT_OVERRIDES[name]) {
+        return null;
+      }
+      return {
+        name,
+        Component: SVG_COMPONENT_OVERRIDES[name] || (component as SvgComponent),
+      };
+    })
+    .filter((entry): entry is SvgEntry => Boolean(entry)),
+];
 
 async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 'svg' | 'png' | 'jpg') {
   const clone = svg.cloneNode(true) as SVGSVGElement;
