@@ -23,9 +23,11 @@
   },
   "dependencies": {
     "@datalayer/icons-react": "^1.0.0",
-    "@datalayer/primer-addons": "^1.0.3",
+    "@datalayer/primer-addons": "^1.0.12",
+    "@datalayer/ui": "^1.0.25",
     "react": "18.3.1",
     "react-dom": "18.3.1",
+    "react-router-dom": "^6.30.1",
     "styled-components": "^5.3.10"
   },
   "devDependencies": {

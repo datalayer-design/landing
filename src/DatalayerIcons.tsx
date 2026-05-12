@@ -1,16 +1,24 @@
-import React, { useState, useEffect, useRef } from "react";
-// import { useDebounce } from "react-use";
-import { CTABanner, Button } from "@primer/react-brand";
-import { ThemeProvider, BaseStyles, IconButton, Text, Box, Link, TextInput, Tooltip } from "@primer/react";
-import { CloseableFlash } from "@datalayer/primer-addons";
-import { SearchIcon, AlertIcon } from "@primer/octicons-react";
+import { useState, useEffect, useRef } from 'react';
+import {
+  ThemeProvider,
+  IconButton,
+  Text,
+  Box,
+  Link,
+  TextInput,
+  Tooltip,
+  Flash,
+  Heading,
+  Button,
+} from '@primer/react';
+import { SearchIcon } from '@primer/octicons-react';
+import {
+  useColorPalette,
+} from '@datalayer/primer-addons';
 import { toPng, toSvg } from 'html-to-image';
-import styled from "styled-components";
-import { MinimalFooter } from "./footer/MinimalFooter";
-import * as dataIcons from "@datalayer/icons-react";
-import * as eggsIcons from "@datalayer/icons-react/eggs";
-
-import '@primer/react-brand/lib/css/main.css'
+import styled from 'styled-components';
+import * as dataIcons from '@datalayer/icons-react';
+import * as eggsIcons from '@datalayer/icons-react/eggs';
 
 const SpanStyle = styled.span`
   span {
@@ -25,7 +33,7 @@ const BorderStyle = styled.span`
   }
 `;
 
-const IconLine = (props: { name: string, icon: any}) => {
+const IconLine = (props: { name: string, icon: any }) => {
   const { name, icon } = props;
   const refColored = useRef<any>(null);
   const refDayColoredStyled = useRef<any>(null);
@@ -71,20 +79,27 @@ const IconLine = (props: { name: string, icon: any}) => {
     <Box alignItems="center" justifyContent="space-between">
       <SpanStyle>
         <span>
-          <IconComponent colored size="large" ref={refColored}/>
+          <IconComponent
+            colored
+            size="large"
+            ref={refColored}
+          />
         </span>
       </SpanStyle>
       <BorderStyle>
         <SpanStyle>
           <span>
-            <IconComponent colored size="large"/>
+            <IconComponent
+              colored
+              size="large"
+            />
           </span>
         </SpanStyle>
       </BorderStyle>
       <BorderStyle>
         <SpanStyle>
           <span>
-            <IconComponent size="large"/>
+            <IconComponent size="large" />
           </span>
         </SpanStyle>
       </BorderStyle>
@@ -92,23 +107,22 @@ const IconLine = (props: { name: string, icon: any}) => {
         <SpanStyle>
           <span>
             <ThemeProvider colorMode="night">
-              {/* TODO use the color from the theme */}
-              <IconComponent color="rgb(173, 186, 199)" size="large" />
+              <IconComponent size="large" style={{ color: 'rgb(173, 186, 199)' }} />
             </ThemeProvider>
           </span>
         </SpanStyle>
       </BorderStyle>
       <ThemeProvider colorMode="day">
-        <IconButton aria-labelledby="" size="medium" sx={{marginRight: "15px"}} icon={ColoredStyledIcon} ref={refDayColoredStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refDayColoredStyled, "day_colored")}/>
+        <IconButton aria-labelledby="" size="medium" sx={{marginRight: '15px'}} icon={ColoredStyledIcon} ref={refDayColoredStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refDayColoredStyled, 'day_colored')}/>
       </ThemeProvider>
       <ThemeProvider colorMode="night">
-        <IconButton aria-labelledby="" size="medium" sx={{marginRight: "15px"}} icon={ColoredStyledIcon} ref={refNightColredStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refNightColredStyled, "night_colored")}/>
+        <IconButton aria-labelledby="" size="medium" sx={{marginRight: '15px'}} icon={ColoredStyledIcon} ref={refNightColredStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refNightColredStyled, 'night_colored')}/>
       </ThemeProvider>
       <ThemeProvider colorMode="day">
-        <IconButton aria-labelledby="" size="medium" sx={{marginRight: "15px"}} icon={StyledIcon} ref={refDayStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refDayStyled, "day")}/>
+        <IconButton aria-labelledby="" size="medium" sx={{marginRight: '15px'}} icon={StyledIcon} ref={refDayStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refDayStyled, 'day')}/>
       </ThemeProvider>
       <ThemeProvider colorMode="night">
-        <IconButton aria-labelledby="" size="medium" sx={{marginRight: "15px"}} icon={StyledIcon} ref={refNightStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refNightStyled, "night")}/>
+        <IconButton aria-labelledby="" size="medium" sx={{marginRight: '15px'}} icon={StyledIcon} ref={refNightStyled} onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refNightStyled, 'night')}/>
       </ThemeProvider>
       <BorderStyle>
         <SpanStyle>
@@ -123,7 +137,7 @@ const IconLine = (props: { name: string, icon: any}) => {
         </SpanStyle>
       </BorderStyle>
       <SpanStyle>
-        <Link href="" title="Download PNG" onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refColored, "plain")}>
+        <Link href="" title="Download PNG" onClick={(e: React.MouseEvent<HTMLElement>) => downloadPNG(e, refColored, 'plain')}>
           <span>
             PNG
           </span>
@@ -149,12 +163,27 @@ const IconLine = (props: { name: string, icon: any}) => {
 
 const IconSummary = (props: { name: string, icon: any }) => {
   const { name, icon } = props;
-  const refSvg = useRef<any>(null);
   const IconComponent = icon;
+  const SummaryIcon = () => (
+    <IconComponent
+      colored
+      size="medium"
+    />
+  );
   return (
     <Box mr={1}>
-      <Tooltip text={name} aria-label={name}>
-        <IconComponent colored size="large" ref={refSvg} />
+      <Tooltip aria-label={name} text={name}>
+        <IconButton
+          aria-label={name}
+          icon={SummaryIcon}
+          variant="invisible"
+          size="small"
+          sx={{
+            border: '1px solid',
+            borderColor: 'border.default',
+            borderRadius: 2,
+          }}
+        />
       </Tooltip>
     </Box>
   )
@@ -185,6 +214,7 @@ const DetailledIcons = (props: {names: string[], icons: any}) => {
 }
 
 const DatalayerIcons = () => {
+  const palette = useColorPalette();
   const [filter, setFilter] = useState('');
 //  const [debouncedFilter, setDebouncedFilter] = useState('');
   const [icons, setIcons] = useState<any>(dataIcons);
@@ -237,62 +267,65 @@ const DatalayerIcons = () => {
   */
   return (
     <>
-      <ThemeProvider dayScheme="light" nightScheme="dark_dimmed">
-        <BaseStyles>
-          <CloseableFlash leadingVisual={AlertIcon} variant="warning">
-            Some of our icons may not be 100% compatible with existing design guidelines.
-            Please open an issue on <Link href="https://github.com/datalayer/icons/issues">https://github.com/datalayer/icons/issues</Link> to help with that.
-          </CloseableFlash>
-          <Box mt={3}>
-            <CTABanner>
-              <CTABanner.Heading style={{margin: 0}}>React.js icons for data products</CTABanner.Heading>
-              <CTABanner.Description>
-                Ξ 🎉 {Object.keys(icons).length} curated icons for data product design.
-              </CTABanner.Description>
-              <CTABanner.ButtonGroup>
-                <Button as="a" href="https://github.com/datalayer/icons">Check the source</Button>
-              </CTABanner.ButtonGroup>
-            </CTABanner>
-            <Box style={{maxWidth: 1200, margin: 'auto'}}>
-              <Box mt={3} mb={3}>
-                <Text>Click on "PNG" or "SVG" to download an icon. Some icons are not rendered as they should in the list, type its name in the filter box to select individually and visualize it correctly. The sources are available in the <Link href="https://github.com/datalayer/icons" target="_blank">datalayer/icons GitHub repository</Link>.</Text>
-              </Box>
-              <Box mb={3}>
-                <TextInput
-                  block
-                  value={filter}
-                  leadingVisual={SearchIcon}
-                  placeholder="Search icons"
-                  autoFocus={true}
-                  onChange={handleFilterChange}
-                />
-              </Box>
-              {(filter === '') ?
-                <DetailledIcons names={names} icons={icons} />
-              :
-                <SummaryIcons names={names} icons={icons} />
-              }
-            </Box>
+      <Box
+        sx={{
+          maxWidth: 1200,
+          mx: 'auto',
+          p: 4,
+          '--datalayer-icon-fg': palette.primary,
+        }}
+      >
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 3, flexWrap: 'wrap' }}>
+          <Box>
+            <Heading as="h1" sx={{ m: 0, mb: 2, fontSize: 5 }}>
+              React icons for data products
+            </Heading>
+            <Text sx={{ color: 'fg.muted' }}>
+              ☰ 🎉 {Object.keys(icons).length} curated icons for data product design.
+            </Text>
           </Box>
-          <MinimalFooter>
-            <MinimalFooter.Link href="https://datalayer.io" target="_blank">
-              Datalayer
-            </MinimalFooter.Link>
-            <MinimalFooter.Link href="https://docs.datalayer.app" target="_blank">
-              Docs
-            </MinimalFooter.Link>
-            <MinimalFooter.Link href="https://datalayer.tech" target="_blank">
-              Tech
-            </MinimalFooter.Link>
-            <MinimalFooter.Link href="https://datalayer.guide" target="_blank">
-              Guide
-            </MinimalFooter.Link>
-            <MinimalFooter.Link href="https://datalayer.blog" target="_blank">
-              Blog
-            </MinimalFooter.Link>
-          </MinimalFooter>
-        </BaseStyles>
-      </ThemeProvider>
+        </Box>
+
+        <Flash variant="warning" sx={{ mt: 3 }}>
+          Some icons may not be 100% compatible with existing design guidelines.
+          Please open an issue on{' '}
+          <Link href="https://github.com/datalayer/icons/issues" target="_blank">
+            github.com/datalayer/icons/issues
+          </Link>
+          .
+        </Flash>
+
+        <Box mt={3} mb={3}>
+          <Text as="p" sx={{ m: 0 }}>
+            Click on PNG or SVG to download an icon. Filter by name to inspect a single icon. Sources are in the{' '}
+            <Link href="https://github.com/datalayer/icons" target="_blank">datalayer/icons repository</Link>.
+          </Text>
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', flexWrap: 'wrap', mb: 3 }}>
+          <Box sx={{ flex: '1 1 340px', minWidth: 260 }}>
+            <TextInput
+              block
+              value={filter}
+              leadingVisual={SearchIcon}
+              placeholder="Search icons"
+              autoFocus={true}
+              onChange={handleFilterChange}
+              sx={{
+                border: '1px solid',
+                borderColor: 'border.default',
+              }}
+            />
+          </Box>
+          <Button onClick={() => filterIcons(filter)}>Apply</Button>
+        </Box>
+
+        {(filter === '') ?
+          <DetailledIcons names={names} icons={icons} />
+        :
+          <SummaryIcons names={names} icons={icons} />
+        }
+      </Box>
     </>
   )
 }
