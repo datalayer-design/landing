@@ -14,13 +14,14 @@
   },
   "homepage": "https://datalayer.design",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "npm run clean && tsc && npm run copy:svg-assets && vite build",
     "clean": "rimraf lib build dist tsconfig.tsbuildinfo",
+    "copy:svg-assets": "mkdir -p lib/svg/images/legacy/releases && cp src/svg/images/legacy/releases/*.svg lib/svg/images/legacy/releases/",
     "dev": "vite",
-    "landing:app": "tsc --watch",
+    "landing:app": "npm run copy:svg-assets && tsc --watch",
     "preview": "vite preview",
     "start": "vite",
-    "watch:lib": "tsc -w"
+    "watch:lib": "npm run copy:svg-assets && tsc -w"
   },
   "dependencies": {
     "@datalayer/icons-react": "^1.0.0",
