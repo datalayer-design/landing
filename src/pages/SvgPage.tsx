@@ -2,9 +2,9 @@ import { useEffect, useMemo, useRef, useState, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Heading, Text } from '@primer/react';
 import { useColorPalette } from '@datalayer/primer-addons';
-import { DATALAYER_SVG_GALLERY } from '@datalayer/ui/lib/assets/svg';
-import * as SvgAssets from '@datalayer/ui/lib/assets/svg';
-import SpitfireAssetUrl from '@datalayer/ui/lib/assets/images/legacy/releases/datalayer-1.3.0-spitfire.svg';
+import { DATALAYER_SVG_GALLERY } from '../svg/gallery';
+import * as SvgAssets from '../svg';
+import SpitfireAssetUrl from '../svg/images/legacy/releases/datalayer-1.3.0-spitfire.svg';
 
 type SvgComponent = (props?: any) => JSX.Element;
 
@@ -337,7 +337,7 @@ export function SvgPage() {
       <Box sx={{ border: '1px solid', borderColor: 'border.default', borderRadius: 2, bg: 'canvas.subtle', p: [3, 4], mb: 4 }}>
         <Heading as="h2" sx={{ fontSize: 4, mb: 2 }}>SVG Gallery</Heading>
         <Text sx={{ color: 'fg.muted' }}>
-          Gallery generated from UI lib artifacts imported from @datalayer/ui/lib/assets/svg.
+          Gallery generated from local design SVG exports.
         </Text>
       </Box>
       <Box sx={{ display: 'grid', gridTemplateColumns: ['1fr', '1fr', '1fr 1fr'], gap: 3 }}>
