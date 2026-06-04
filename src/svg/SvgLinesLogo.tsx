@@ -5,7 +5,12 @@
  */
 
 import { useId } from 'react';
-import { DatalayerLogoText, useColorPalette } from '@datalayer/primer-addons';
+import {
+  DatalayerLogoText,
+  getLogoColors,
+  useColorPalette,
+  useThemeStore,
+} from '@datalayer/primer-addons';
 import { SvgLines } from './SvgLines';
 
 type SvgLinesLogoProps = {
@@ -26,7 +31,15 @@ export function SvgLinesLogo({
   textColor,
 }: SvgLinesLogoProps = {}) {
   const palette = useColorPalette();
-  const effectiveColorMode: 'light' | 'dark' = palette.isLight ? 'light' : 'dark';
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const logoColors = getLogoColors(theme, effectiveColorMode);
+  const themedPrimaryColor = primaryColor ?? logoColors.primary ?? palette.primary;
+  const themedSecondaryColor = secondaryColor ?? logoColors.secondary ?? palette.secondary;
+  const themedTextColor = textColor ?? logoColors.textColor ?? palette.secondary;
   // SvgLines viewBox is 44 tall but the three bars only occupy y=8..36 (28 units).
   // DatalayerLogoText glyphs fill their full viewBox, so the visible text height
   // equals the wordmark `size`. To make the visible text height equal the visible
@@ -83,10 +96,11 @@ export function SvgLinesLogo({
       <DatalayerLogoText
         size={logoSize}
         inverse
+        variant={theme}
         colorMode={effectiveColorMode}
-        primaryColor={primaryColor}
-        secondaryColor={secondaryColor}
-        textColor={textColor}
+        primaryColor={themedPrimaryColor}
+        secondaryColor={themedSecondaryColor}
+        textColor={themedTextColor}
         className={`${scopeClass}__wordmark`}
       />
     </div>

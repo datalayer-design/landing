@@ -18,7 +18,7 @@
 
 import { type ColorPalette, useColorPalette, LightBoostFilter } from '@datalayer/primer-addons';
 
-export function SvgJoinConfirmHero({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
+export function SvgJoinConfirm({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
   const p = paletteProp ?? auto;
   const lightFilter = p.isLight ? 'url(#svgLightBoost)' : undefined;
@@ -173,4 +173,4 @@ export function SvgJoinConfirmHero({ palette: paletteProp }: { palette?: ColorPa
   );
 }
 
-export default SvgJoinConfirmHero;
+export default SvgJoinConfirm;

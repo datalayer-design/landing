@@ -13,7 +13,7 @@
 
 import { type ColorPalette, useColorPalette, LightBoostFilter } from '@datalayer/primer-addons';
 
-export function SvgInvitesHero({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
+export function SvgInvites({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
   const p = paletteProp ?? auto;
 
@@ -115,4 +115,4 @@ export function SvgInvitesHero({ palette: paletteProp }: { palette?: ColorPalett
   );
 }
 
-export default SvgInvitesHero;
+export default SvgInvites;

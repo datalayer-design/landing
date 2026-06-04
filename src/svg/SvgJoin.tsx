@@ -62,7 +62,7 @@ function ctrlPt(ax: number, ay: number, bx: number, by: number, bend: number) {
   return { cx: mx + (-dy / len) * bend, cy: my + (dx / len) * bend };
 }
 
-export function SvgJoinHero({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
+export function SvgJoin({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
   const p = paletteProp ?? auto;
 
@@ -256,4 +256,4 @@ export function SvgJoinHero({ palette: paletteProp }: { palette?: ColorPalette }
   );
 }
 
-export default SvgJoinHero;
+export default SvgJoin;

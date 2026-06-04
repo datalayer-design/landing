@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useRef, useState, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Heading, Text } from '@primer/react';
-import { useColorPalette } from '@datalayer/primer-addons';
+import {
+  AI,
+  DatalayerLogo,
+  DatalayerLogoText,
+  DatalayerTextAI,
+  getLogoColors,
+  useColorPalette,
+  useThemeStore,
+} from '@datalayer/primer-addons';
 import { DATALAYER_SVG_GALLERY } from '../svg/gallery';
 import * as SvgAssets from '../svg';
-import SpitfireAssetUrl from '../svg/images/legacy/releases/datalayer-1.3.0-spitfire.svg';
+import SpitfireAssetUrl from '../svg/images/datalayer-1.3.0-spitfire.svg';
+import BlackSnakeAssetUrl from '../svg/images/datalayer-1.2.0-black-snake.svg';
 
 type SvgComponent = (props?: any) => JSX.Element;
 
@@ -12,6 +21,18 @@ type SvgEntry = {
   name: string;
   Component: SvgComponent;
 };
+
+type SvgSegment = 'Hero' | 'Features' | 'System' | 'Artifacts' | 'Releases' | 'Logo' | 'Communication' | 'Cases';
+
+const SEGMENTS: SvgSegment[] = ['Hero', 'Features', 'System', 'Artifacts', 'Communication', 'Cases', 'Releases', 'Logo'];
+const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
+  (acc, segment) => {
+    acc[segment.toLowerCase()] = segment;
+    return acc;
+  },
+  {} as Record<string, SvgSegment>,
+);
+const slugForSegment = (segment: SvgSegment) => segment.toLowerCase();
 
 const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
 
@@ -42,7 +63,7 @@ function SvgSpitfireInline() {
       svg.setAttribute('width', '100%');
       svg.setAttribute('height', '100%');
       svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      svg.setAttribute('style', `width:100%;height:100%;display:block;background:${p.bg};`);
+      svg.setAttribute('style', `width:100%;height:100%;display:block;background:${p.bg};color:${tint};`);
 
       const blackFills = new Set(['#000', '#000000', 'black', 'rgb(0,0,0)']);
       doc.querySelectorAll('[fill]').forEach((node) => {
@@ -84,8 +105,82 @@ function SvgSpitfireInline() {
   );
 }
 
-function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
+function SvgBlackSnakeInline() {
   const p = useColorPalette();
+  const tint = p.isLight ? p.primary : p.spark;
+  const [svgMarkup, setSvgMarkup] = useState<string>('');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAndTint = async () => {
+      const response = await fetch(BlackSnakeAssetUrl);
+      const source = await response.text();
+      if (cancelled) {
+        return;
+      }
+
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(source, 'image/svg+xml');
+      const svg = doc.querySelector('svg');
+
+      if (!svg) {
+        setSvgMarkup(source);
+        return;
+      }
+
+      svg.setAttribute('width', '100%');
+      svg.setAttribute('height', '100%');
+      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+      svg.setAttribute('style', `width:100%;height:100%;display:block;background:${p.bg};color:${tint};`);
+
+      const blackFills = new Set(['#000', '#000000', 'black', 'rgb(0,0,0)']);
+      doc.querySelectorAll('[fill]').forEach((node) => {
+        const fill = (node.getAttribute('fill') || '').replace(/\s+/g, '').toLowerCase();
+        if (blackFills.has(fill)) {
+          node.setAttribute('fill', tint);
+        }
+      });
+
+      doc.querySelectorAll('[stroke]').forEach((node) => {
+        const stroke = (node.getAttribute('stroke') || '').replace(/\s+/g, '').toLowerCase();
+        if (blackFills.has(stroke)) {
+          node.setAttribute('stroke', tint);
+        }
+      });
+
+      const serialized = new XMLSerializer().serializeToString(svg);
+      setSvgMarkup(serialized);
+    };
+
+    loadAndTint().catch(() => setSvgMarkup(''));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [p.bg, tint]);
+
+  return (
+    <Box
+      aria-label="Black snake"
+      sx={{
+        width: '100%',
+        height: '100%',
+        display: 'block',
+        overflow: 'hidden',
+      }}
+      dangerouslySetInnerHTML={{ __html: svgMarkup }}
+    />
+  );
+}
+
+function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const logoColors = getLogoColors(theme, effectiveColorMode);
   const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
 
   return (
@@ -106,9 +201,202 @@ function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
       <BaseSvgLinesLogo
         height={42}
         colored
-        primaryColor={p.primary}
-        secondaryColor={p.secondary}
-        textColor={p.secondary}
+        primaryColor={logoColors.primary}
+        secondaryColor={logoColors.secondary}
+        textColor={logoColors.textColor}
+      />
+    </Box>
+  );
+}
+
+function SvgLinesColored(props?: SVGProps<SVGSVGElement>) {
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Colored lines"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <SvgAssets.SvgLines colored width="100%" height={44} />
+    </Box>
+  );
+}
+
+function SvgDatalayerLogo(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const logoColors = getLogoColors(theme, effectiveColorMode);
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Datalayer logo"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <DatalayerLogo
+        size={64}
+        variant={theme}
+        colorMode={effectiveColorMode}
+        primaryColor={logoColors.primary}
+        secondaryColor={logoColors.secondary}
+        primaryGradient={logoColors.primaryGradient}
+        secondaryGradient={logoColors.secondaryGradient}
+      />
+    </Box>
+  );
+}
+
+function SvgDatalayerTextLogo(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const logoColors = getLogoColors(theme, effectiveColorMode);
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Datalayer text logo"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <DatalayerLogoText
+        size={30}
+        variant={theme}
+        colorMode={effectiveColorMode}
+        primaryColor={logoColors.primary}
+        secondaryColor={logoColors.secondary}
+        textColor={logoColors.textColor}
+      />
+    </Box>
+  );
+}
+
+function SvgDatalayerTextLogoFirst(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const logoColors = getLogoColors(theme, effectiveColorMode);
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Datalayer text logo first"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <DatalayerLogoText
+        size={30}
+        inverse
+        variant={theme}
+        colorMode={effectiveColorMode}
+        primaryColor={logoColors.primary}
+        secondaryColor={logoColors.secondary}
+        textColor={logoColors.textColor}
+      />
+    </Box>
+  );
+}
+
+function SvgAI(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="AI mark"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <AI size={96} variant={theme} colorMode={effectiveColorMode} />
+    </Box>
+  );
+}
+
+function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Datalayer text AI"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <DatalayerTextAI
+        aiGap={1}
+        variant={theme}
+        colorMode={effectiveColorMode}
       />
     </Box>
   );
@@ -116,7 +404,12 @@ function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
 
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
+  SvgBlackSnake: SvgBlackSnakeInline,
   SvgLinesLogo,
+  SvgDatalayerLogo,
+  SvgDatalayerTextLogo,
+  SvgDatalayerTextLogoFirst,
+  SvgDatalayerTextAI,
 };
 
 const DATALAYER_SVGS: SvgEntry[] = [
@@ -132,7 +425,180 @@ const DATALAYER_SVGS: SvgEntry[] = [
       };
     })
     .filter((entry): entry is SvgEntry => entry !== null),
+  {
+    name: 'SvgDatalayerLogo',
+    Component: SvgDatalayerLogo,
+  },
+  {
+    name: 'SvgDatalayerTextLogo',
+    Component: SvgDatalayerTextLogo,
+  },
+  {
+    name: 'SvgDatalayerTextLogoFirst',
+    Component: SvgDatalayerTextLogoFirst,
+  },
+  {
+    name: 'SvgDatalayerTextAI',
+    Component: SvgDatalayerTextAI,
+  },
+  {
+    name: 'SvgAI',
+    Component: SvgAI,
+  },
+  {
+    name: 'SvgLinesColored',
+    Component: SvgLinesColored,
+  },
 ];
+
+const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake']);
+const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
+const LOGO_SVG_NAMES = new Set([
+  'SvgAI',
+  'SvgDatalayerLogo',
+  'SvgDatalayerTextLogo',
+  'SvgDatalayerTextLogoFirst',
+  'SvgDatalayerTextAI',
+  'SvgLines',
+  'SvgLinesColored',
+  'SvgLinesLogo',
+]);
+const LOGO_SVG_TRAILING_NAMES = new Set(['SvgLines', 'SvgLinesColored', 'SvgLinesLogo']);
+const LOGO_SVG_TRAILING_ORDER: Record<string, number> = {
+  SvgLines: 0,
+  SvgLinesColored: 1,
+  SvgLinesLogo: 2,
+};
+const COMMUNICATION_SVG_NAMES = new Set(['SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgDiscord', 'SvgRadar']);
+const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero']);
+const ARTIFACTS_SVG_NAMES = new Set([
+  'SvgNotebookArtifact',
+  'SvgDocumentArtifact',
+  'SvgCellArtifact',
+  'SvgDataset',
+  'SvgPublication',
+]);
+const ARTIFACTS_SVG_ORDER: Record<string, number> = {
+  SvgNotebookArtifact: 0,
+  SvgDocumentArtifact: 1,
+  SvgCellArtifact: 2,
+  SvgDataset: 3,
+  SvgPublication: 4,
+};
+
+function isCaseSvg(name: string) {
+  return CASES_SVG_NAMES.has(name);
+}
+
+function isHeroSvg(name: string) {
+  return name.endsWith('Hero') && !isCaseSvg(name);
+}
+
+function isReleaseSvg(name: string) {
+  return RELEASE_SVG_NAMES.has(name);
+}
+
+function isSystemSvg(name: string) {
+  return SYSTEM_SVG_NAMES.has(name);
+}
+
+function isLogoSvg(name: string) {
+  return LOGO_SVG_NAMES.has(name);
+}
+
+function isCommunicationSvg(name: string) {
+  return COMMUNICATION_SVG_NAMES.has(name);
+}
+
+function isArtifactsSvg(name: string) {
+  return ARTIFACTS_SVG_NAMES.has(name);
+}
+
+function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
+  if (segment === 'Hero') {
+    return isHeroSvg(entry.name);
+  }
+  if (segment === 'Releases') {
+    return isReleaseSvg(entry.name);
+  }
+  if (segment === 'System') {
+    return isSystemSvg(entry.name);
+  }
+  if (segment === 'Logo') {
+    return isLogoSvg(entry.name);
+  }
+  if (segment === 'Communication') {
+    return isCommunicationSvg(entry.name);
+  }
+  if (segment === 'Artifacts') {
+    return isArtifactsSvg(entry.name);
+  }
+  if (segment === 'Cases') {
+    return isCaseSvg(entry.name);
+  }
+  return (
+    !isHeroSvg(entry.name)
+    && !isReleaseSvg(entry.name)
+    && !isSystemSvg(entry.name)
+    && !isLogoSvg(entry.name)
+    && !isCommunicationSvg(entry.name)
+    && !isArtifactsSvg(entry.name)
+    && !isCaseSvg(entry.name)
+  );
+}
+
+function SegmentControl({
+  value,
+  onChange,
+  counts,
+}: {
+  value: SvgSegment;
+  onChange: (segment: SvgSegment) => void;
+  counts: Record<SvgSegment, number>;
+}) {
+  const segments: SvgSegment[] = SEGMENTS;
+
+  return (
+    <Box
+      role="tablist"
+      aria-label="SVG segment filter"
+      sx={{
+        display: 'inline-flex',
+        border: '1px solid',
+        borderColor: 'border.default',
+        borderRadius: 2,
+        overflow: 'hidden',
+        bg: 'canvas.default',
+      }}
+    >
+      {segments.map((segment, index) => {
+        const active = value === segment;
+        return (
+          <Button
+            key={segment}
+            role="tab"
+            aria-selected={active}
+            onClick={() => onChange(segment)}
+            sx={{
+              border: 'none',
+              borderRadius: 0,
+              borderLeft: index === 0 ? 'none' : '1px solid',
+              borderLeftColor: 'border.default',
+              bg: active ? 'accent.subtle' : 'canvas.default',
+              color: active ? 'accent.fg' : 'fg.default',
+              fontWeight: active ? 600 : 400,
+              ':hover': {
+                bg: active ? 'accent.subtle' : 'canvas.subtle',
+              },
+            }}
+          >
+            {segment} ({counts[segment]})
+          </Button>
+        );
+      })}
+    </Box>
+  );
+}
 
 async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 'svg' | 'png' | 'jpg') {
   const clone = svg.cloneNode(true) as SVGSVGElement;
@@ -326,9 +792,60 @@ function SvgDetailPage() {
 }
 
 export function SvgPage() {
+  const navigate = useNavigate();
   const { name } = useParams<{ name?: string }>();
+  const routeSegment = name ? SEGMENT_BY_SLUG[name.toLowerCase()] : undefined;
+  const isDetailRoute = !!name && !routeSegment;
+  const [segment, setSegmentState] = useState<SvgSegment>(routeSegment ?? 'Hero');
 
-  if (name) {
+  useEffect(() => {
+    if (routeSegment && routeSegment !== segment) {
+      setSegmentState(routeSegment);
+    }
+  }, [routeSegment, segment]);
+
+  const setSegment = (next: SvgSegment) => {
+    setSegmentState(next);
+    navigate(`/svg/${slugForSegment(next)}`);
+  };
+
+  const segmentCounts = useMemo(() => {
+    return {
+      Hero: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Hero')).length,
+      System: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'System')).length,
+      Features: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Features')).length,
+      Artifacts: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Artifacts')).length,
+      Releases: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Releases')).length,
+      Logo: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Logo')).length,
+      Communication: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Communication')).length,
+      Cases: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Cases')).length,
+    };
+  }, []);
+
+  const filteredSvgs = useMemo(() => {
+    const entries = DATALAYER_SVGS.filter((entry) => svgInSegment(entry, segment));
+    if (segment === 'Artifacts') {
+      return [...entries].sort((a, b) => {
+        return (ARTIFACTS_SVG_ORDER[a.name] ?? 99) - (ARTIFACTS_SVG_ORDER[b.name] ?? 99);
+      });
+    }
+    if (segment !== 'Logo') {
+      return entries;
+    }
+    return [...entries].sort((a, b) => {
+      const aTrailing = LOGO_SVG_TRAILING_NAMES.has(a.name);
+      const bTrailing = LOGO_SVG_TRAILING_NAMES.has(b.name);
+      if (aTrailing === bTrailing) {
+        if (aTrailing && bTrailing) {
+          return (LOGO_SVG_TRAILING_ORDER[a.name] ?? 99) - (LOGO_SVG_TRAILING_ORDER[b.name] ?? 99);
+        }
+        return 0;
+      }
+      return aTrailing ? 1 : -1;
+    });
+  }, [segment]);
+
+  if (isDetailRoute) {
     return <SvgDetailPage />;
   }
 
@@ -339,9 +856,12 @@ export function SvgPage() {
         <Text sx={{ color: 'fg.muted' }}>
           Gallery generated from local design SVG exports.
         </Text>
+        <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+          <SegmentControl value={segment} onChange={setSegment} counts={segmentCounts} />
+        </Box>
       </Box>
       <Box sx={{ display: 'grid', gridTemplateColumns: ['1fr', '1fr', '1fr 1fr'], gap: 3 }}>
-        {DATALAYER_SVGS.map((entry) => (
+        {filteredSvgs.map((entry) => (
           <SvgCard key={entry.name} {...entry} />
         ))}
       </Box>

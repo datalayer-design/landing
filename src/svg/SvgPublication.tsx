@@ -6,7 +6,7 @@
 
 import { type ColorPalette, useColorPalette } from '@datalayer/primer-addons';
 
-export function SvgPublicationsHero({
+export function SvgPublication({
   palette: paletteProp,
 }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
@@ -56,4 +56,4 @@ export function SvgPublicationsHero({
   );
 }
 
-export default SvgPublicationsHero;
+export default SvgPublication;

@@ -6,7 +6,7 @@
 
 import { type ColorPalette, useColorPalette } from '@datalayer/primer-addons';
 
-export function SvgDatasetHero({
+export function SvgDataset({
   palette: paletteProp,
 }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
@@ -57,4 +57,4 @@ export function SvgDatasetHero({
   );
 }
 
-export default SvgDatasetHero;
+export default SvgDataset;
