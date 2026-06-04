@@ -35,4 +35,4 @@ deploy: build ## deploy to web
 		--distribution-id E303GZGZVTY01Q \
 		--paths "/*" \
 		--profile datalayer && \
-	echo open ✨  https://datalayer.design )
+	echo open ✨  https://datalayer.design
