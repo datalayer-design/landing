@@ -22,9 +22,9 @@ type SvgEntry = {
   Component: SvgComponent;
 };
 
-type SvgSegment = 'Hero' | 'Features' | 'System' | 'Artifacts' | 'Releases' | 'Logo' | 'Communication' | 'Cases';
+type SvgSegment = 'Hero' | 'Features' | 'System' | 'Artifacts' | 'Squares' | 'Releases' | 'Logo' | 'Communication' | 'Cases';
 
-const SEGMENTS: SvgSegment[] = ['Hero', 'Features', 'System', 'Artifacts', 'Communication', 'Cases', 'Releases', 'Logo'];
+const SEGMENTS: SvgSegment[] = ['Hero', 'Features', 'System', 'Artifacts', 'Squares', 'Communication', 'Cases', 'Releases', 'Logo'];
 const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   (acc, segment) => {
     acc[segment.toLowerCase()] = segment;
@@ -478,6 +478,7 @@ const ARTIFACTS_SVG_NAMES = new Set([
   'SvgDataset',
   'SvgPublication',
 ]);
+const SQUARES_SVG_NAMES = new Set(['SvgSquare1', 'SvgSquare2']);
 const ARTIFACTS_SVG_ORDER: Record<string, number> = {
   SvgNotebookArtifact: 0,
   SvgDocumentArtifact: 1,
@@ -514,6 +515,10 @@ function isArtifactsSvg(name: string) {
   return ARTIFACTS_SVG_NAMES.has(name);
 }
 
+function isSquaresSvg(name: string) {
+  return SQUARES_SVG_NAMES.has(name);
+}
+
 function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'Hero') {
     return isHeroSvg(entry.name);
@@ -533,6 +538,9 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'Artifacts') {
     return isArtifactsSvg(entry.name);
   }
+  if (segment === 'Squares') {
+    return isSquaresSvg(entry.name);
+  }
   if (segment === 'Cases') {
     return isCaseSvg(entry.name);
   }
@@ -543,6 +551,7 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
     && !isLogoSvg(entry.name)
     && !isCommunicationSvg(entry.name)
     && !isArtifactsSvg(entry.name)
+    && !isSquaresSvg(entry.name)
     && !isCaseSvg(entry.name)
   );
 }
@@ -815,6 +824,7 @@ export function SvgPage() {
       System: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'System')).length,
       Features: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Features')).length,
       Artifacts: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Artifacts')).length,
+      Squares: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Squares')).length,
       Releases: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Releases')).length,
       Logo: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Logo')).length,
       Communication: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Communication')).length,

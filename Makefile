@@ -3,13 +3,6 @@
 
 SHELL=/bin/bash
 
-CONDA=source $$(conda info --base)/etc/profile.d/conda.sh
-CONDA_ACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda activate
-CONDA_DEACTIVATE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda deactivate
-CONDA_REMOVE=source $$(conda info --base)/etc/profile.d/conda.sh ; conda remove -y --all -n
-
-ENV_NAME=datalayer
-
 .PHONY: help
 
 default: help ## default target is help
@@ -21,27 +14,24 @@ help: ## display this help
 
 clean: ## clean
 	@exec echo CLEAN
-	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		npm clean )
+	npm run clean
 
 build: ## build all modules
-	@exec echo BUILD
-	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		npm run build )
+	npm run build
 
-dev: ## start
-	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-		npm dev )
+start: ## start
+	npm run start
+
+dev: ## dev
+	npm run dev
 
 deploy: build ## deploy to web
-	@exec echo PUBLISH WEB
-	($(CONDA_ACTIVATE) ${ENV_NAME}; \
-	  aws s3 cp \
+	aws s3 cp \
 		./dist \
 		s3://datalayer-design/ \
 		--recursive \
 		--profile datalayer && \
-	  aws cloudfront create-invalidation \
+	aws cloudfront create-invalidation \
 		--distribution-id E303GZGZVTY01Q \
 		--paths "/*" \
 		--profile datalayer && \

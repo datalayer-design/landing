@@ -43,6 +43,8 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgJupyterMcp',
   'SvgLines',
   'SvgPublication',
+  'SvgSquare1',
+  'SvgSquare2',
   'SvgNotFound',
   'SvgUnauthorized',
 ] as const;

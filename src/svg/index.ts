@@ -50,6 +50,8 @@ export { SvgDataset } from './SvgDataset';
 export { SvgJupyterMcp } from './SvgJupyterMcp';
 export { SvgLines } from './SvgLines';
 export { SvgPublication } from './SvgPublication';
+export { SvgSquare1 } from './SvgSquare1';
+export { SvgSquare2 } from './SvgSquare2';
 export { SvgPrivacyHero } from './SvgPrivacyHero';
 export { SvgTermsHero } from './SvgTermsHero';
 export { SvgNotFound } from './SvgNotFound';
