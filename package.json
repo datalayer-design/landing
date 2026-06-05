@@ -1,7 +1,7 @@
 {
   "name": "@datalayer/design",
-  "version": "0.0.1",
-  "private": true,
+  "version": "1.0.0",
+  "private": false,
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
@@ -15,6 +15,7 @@
   "homepage": "https://datalayer.design",
   "scripts": {
     "build": "npm run clean && tsc && npm run copy:svg-assets && vite build",
+    "build:lib": "tsc && npm run copy:svg-assets",
     "clean": "rimraf lib build dist tsconfig.tsbuildinfo",
     "copy:svg-assets": "mkdir -p lib/svg/images && cp src/svg/images/datalayer-*.svg lib/svg/images/",
     "dev": "vite",

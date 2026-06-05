@@ -13,11 +13,13 @@ help: ## display this help
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
 clean: ## clean
-	@exec echo CLEAN
 	npm run clean
 
 build: ## build all modules
 	npm run build
+
+build-lib: ## build lib
+	npm run build:lib
 
 start: ## start
 	npm run start
@@ -36,3 +38,7 @@ deploy: build ## deploy to web
 		--paths "/*" \
 		--profile datalayer && \
 	echo open ✨  https://datalayer.design
+
+publish-npm: clean build-lib ## publish-npm
+	npm publish --access public
+	echo open https://www.npmjs.com/package/@datalayer/design
