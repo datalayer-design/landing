@@ -7,7 +7,7 @@
 import { useId } from 'react';
 import { type ColorPalette, useColorPalette, LightBoostFilter } from '@datalayer/primer-addons';
 
-export function SvgSquare2({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
+export function SvgPixel2({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
   const p = paletteProp ?? auto;
   const id = useId().replace(/:/g, '');
@@ -139,4 +139,4 @@ export function SvgSquare2({ palette: paletteProp }: { palette?: ColorPalette } 
   );
 }
 
-export default SvgSquare2;
+export default SvgPixel2;

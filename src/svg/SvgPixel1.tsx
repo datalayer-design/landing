@@ -7,7 +7,7 @@
 import { useId } from 'react';
 import { type ColorPalette, useColorPalette, LightBoostFilter } from '@datalayer/primer-addons';
 
-export function SvgSquare1({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
+export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
   const auto = useColorPalette();
   const p = paletteProp ?? auto;
   const id = useId().replace(/:/g, '');
@@ -32,7 +32,7 @@ export function SvgSquare1({ palette: paletteProp }: { palette?: ColorPalette } 
     const waveA = Math.sin(t * Math.PI * 8) * 0.05;
     const waveB = Math.sin(t * Math.PI * 3 + 0.9) * 0.035;
     const waveC = Math.sin(t * Math.PI * 15 + 0.3) * 0.018;
-    const bandTop = Math.max(0.2, Math.min(0.64, 0.24 + 0.31 * t + waveA + waveB + waveC));
+    const bandTop = Math.max(0.2, Math.min(0.72, 0.24 + 0.38 * t + waveA + waveB + waveC));
 
     for (let row = 0; row < rows; row += 1) {
       const rel = row / (rows - 1);
@@ -72,7 +72,7 @@ export function SvgSquare1({ palette: paletteProp }: { palette?: ColorPalette } 
       }
 
       // Sparse high outliers; stronger toward the right side.
-      if (rel > bandTop && rel <= bandTop + 0.28 && rareNoise < 0.012 + t * 0.05) {
+      if (rel > bandTop && rel <= bandTop + 0.34 && rareNoise < 0.016 + t * 0.07) {
         fillProbability = Math.max(fillProbability, 0.58);
       }
 
@@ -129,4 +129,4 @@ export function SvgSquare1({ palette: paletteProp }: { palette?: ColorPalette } 
   );
 }
 
-export default SvgSquare1;
+export default SvgPixel1;
