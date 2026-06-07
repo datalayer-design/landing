@@ -51,7 +51,9 @@ export function HomePage() {
               maxWidth: 880,
             }}
           >
-            The visual system behind Datalayer&rsquo;s AI &amp; data products.
+            The visual system behind
+            <br />
+            Datalayer&rsquo;s AI &amp; data products.
           </Heading>
           <Text as="p" sx={{ fontSize: 3, lineHeight: 1.55, maxWidth: 760, color: 'fg.default', mb: 0 }}>
             One brand, one palette, one geometry &mdash; so every notebook,

@@ -1,7 +1,7 @@
 import { Suspense, lazy } from 'react';
 import { Box, Spinner, Text } from '@primer/react';
 
-const DatalayerIcons = lazy(() => import('../DatalayerIcons'));
+const DatalayerIcons = lazy(() => import('../icons/DatalayerIcons'));
 
 export function IconsPage() {
   return (
