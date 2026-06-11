@@ -25,6 +25,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgDiscord',
   'SvgTutorialsHero',
   'SvgResearchHero',
+  'SvgEvalsHero',
   'SvgEventsHero',
   'SvgStarsHero',
   'SvgSpitfire',
@@ -45,6 +46,8 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgPublication',
   'SvgPixel1',
   'SvgPixel2',
+  'SvgPrivacyHero',
+  'SvgTermsHero',
   'SvgNotFound',
   'SvgUnauthorized',
 ] as const;

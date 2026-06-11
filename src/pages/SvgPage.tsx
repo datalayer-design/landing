@@ -412,8 +412,15 @@ const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgDatalayerTextAI,
 };
 
+const ALL_SVG_ASSET_NAMES = Array.from(
+  new Set([
+    ...DATALAYER_SVG_GALLERY,
+    ...Object.keys(SvgAssets).filter((name) => /^Svg[A-Z]/.test(name)),
+  ])
+);
+
 const DATALAYER_SVGS: SvgEntry[] = [
-  ...DATALAYER_SVG_GALLERY
+  ...ALL_SVG_ASSET_NAMES
     .map((name): SvgEntry | null => {
       const component = (SvgAssets as Record<string, unknown>)[name];
       if (typeof component !== 'function' && !SVG_COMPONENT_OVERRIDES[name]) {
@@ -424,7 +431,21 @@ const DATALAYER_SVGS: SvgEntry[] = [
         Component: SVG_COMPONENT_OVERRIDES[name] || (component as SvgComponent),
       };
     })
-    .filter((entry): entry is SvgEntry => entry !== null),
+    .filter((entry): entry is SvgEntry => entry !== null)
+    .sort((a, b) => {
+      const ia = DATALAYER_SVG_GALLERY.indexOf(a.name as any);
+      const ib = DATALAYER_SVG_GALLERY.indexOf(b.name as any);
+      if (ia !== -1 && ib !== -1) {
+        return ia - ib;
+      }
+      if (ia !== -1) {
+        return -1;
+      }
+      if (ib !== -1) {
+        return 1;
+      }
+      return a.name.localeCompare(b.name);
+    }),
   {
     name: 'SvgDatalayerLogo',
     Component: SvgDatalayerLogo,

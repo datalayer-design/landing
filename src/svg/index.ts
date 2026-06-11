@@ -32,6 +32,7 @@ export { SvgInvites } from './SvgInvites';
 export { SvgDiscord, SVG_DISCORD_MATRIX_LIGHT_INLINE } from './SvgDiscord';
 export { SvgTutorialsHero } from './SvgTutorialsHero';
 export { SvgResearchHero } from './SvgResearchHero';
+export { SvgEvalsHero } from './SvgEvalsHero';
 export { SvgEventsHero } from './SvgEventsHero';
 export { SvgStarsHero } from './SvgStarsHero';
 export { SvgSpitfire } from './SvgSpitfire';
