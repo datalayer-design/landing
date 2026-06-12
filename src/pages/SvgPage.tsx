@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Heading, Text } from '@primer/react';
 import {
   AI,
+  AI2,
   DatalayerLogo,
   DatalayerLogoText,
   DatalayerTextAI,
@@ -370,6 +371,34 @@ function SvgAI(props?: SVGProps<SVGSVGElement>) {
   );
 }
 
+function SvgAI2(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="AI2 mark"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <AI2 size={96} variant={theme} colorMode={effectiveColorMode} />
+    </Box>
+  );
+}
+
 function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
   const { colorMode, theme } = useThemeStore();
   const effectiveColorMode: 'light' | 'dark' =
@@ -467,6 +496,10 @@ const DATALAYER_SVGS: SvgEntry[] = [
     Component: SvgAI,
   },
   {
+    name: 'SvgAI2',
+    Component: SvgAI2,
+  },
+  {
     name: 'SvgLinesColored',
     Component: SvgLinesColored,
   },
@@ -476,6 +509,7 @@ const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake']);
 const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
 const LOGO_SVG_NAMES = new Set([
   'SvgAI',
+  'SvgAI2',
   'SvgDatalayerLogo',
   'SvgDatalayerTextLogo',
   'SvgDatalayerTextLogoFirst',

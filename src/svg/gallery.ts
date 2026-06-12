@@ -50,6 +50,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgTermsHero',
   'SvgNotFound',
   'SvgUnauthorized',
+  'SvgAI2',
 ] as const;
 
 export type DatalayerSvgGalleryName = (typeof DATALAYER_SVG_GALLERY)[number];
