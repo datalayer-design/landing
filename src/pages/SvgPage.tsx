@@ -751,6 +751,7 @@ function SvgCard({ name, Component }: SvgEntry) {
           p: 2,
           border: '1px dashed',
           borderColor: 'border.default',
+          bg: 'canvas.subtle',
           borderRadius: 2,
           minHeight: 160,
           display: 'flex',
@@ -763,7 +764,6 @@ function SvgCard({ name, Component }: SvgEntry) {
           cursor: 'pointer',
           ':hover': {
             borderColor: 'accent.fg',
-            bg: 'canvas.subtle',
           },
           ':focus-visible': {
             outline: '2px solid',

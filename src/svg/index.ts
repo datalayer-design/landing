@@ -22,6 +22,7 @@ export { SvgAgentsHomeHero } from './SvgAgentsHomeHero';
 export { SvgLoginHero } from './SvgLoginHero';
 export { SvgUsecasesHero } from './SvgUsecasesHero';
 export { SvgIntegrationsHero } from './SvgIntegrationsHero';
+export { SvgPartnersHero } from './SvgPartnersHero';
 export { SvgChangelogHero } from './SvgChangelogHero';
 export { SvgAboutHero } from './SvgAboutHero';
 export { SvgCareersHero } from './SvgCareersHero';

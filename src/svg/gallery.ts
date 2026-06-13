@@ -15,6 +15,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgLoginHero',
   'SvgUsecasesHero',
   'SvgIntegrationsHero',
+  'SvgPartnersHero',
   'SvgChangelogHero',
   'SvgAboutHero',
   'SvgCareersHero',
