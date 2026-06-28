@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Heading, Text } from '@primer/react';
+import { Box, Button, Heading, Text, TextInput } from '@primer/react';
 import {
   AI,
   AI2,
@@ -530,6 +530,9 @@ const ARTIFACTS_SVG_NAMES = new Set([
   'SvgNotebookArtifact',
   'SvgDocumentArtifact',
   'SvgCellArtifact',
+  'SvgLessonArtifact',
+  'SvgExerciseArtifact',
+  'SvgAssignmentArtifact',
   'SvgDataset',
   'SvgPublication',
 ]);
@@ -538,8 +541,11 @@ const ARTIFACTS_SVG_ORDER: Record<string, number> = {
   SvgNotebookArtifact: 0,
   SvgDocumentArtifact: 1,
   SvgCellArtifact: 2,
-  SvgDataset: 3,
-  SvgPublication: 4,
+  SvgLessonArtifact: 3,
+  SvgExerciseArtifact: 4,
+  SvgAssignmentArtifact: 5,
+  SvgDataset: 6,
+  SvgPublication: 7,
 };
 
 function isCaseSvg(name: string) {
@@ -861,6 +867,7 @@ export function SvgPage() {
   const routeSegment = name ? SEGMENT_BY_SLUG[name.toLowerCase()] : undefined;
   const isDetailRoute = !!name && !routeSegment;
   const [segment, setSegmentState] = useState<SvgSegment>(routeSegment ?? 'Hero');
+  const [filter, setFilter] = useState('');
 
   useEffect(() => {
     if (routeSegment && routeSegment !== segment) {
@@ -873,22 +880,34 @@ export function SvgPage() {
     navigate(`/svg/${slugForSegment(next)}`);
   };
 
+  const normalizedFilter = filter.trim().toLowerCase();
+
+  const filterMatches = (entry: SvgEntry) => {
+    if (!normalizedFilter) {
+      return true;
+    }
+    return entry.name.toLowerCase().includes(normalizedFilter);
+  };
+
   const segmentCounts = useMemo(() => {
+    const textFiltered = DATALAYER_SVGS.filter(filterMatches);
     return {
-      Hero: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Hero')).length,
-      System: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'System')).length,
-      Features: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Features')).length,
-      Artifacts: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Artifacts')).length,
-      Pixels: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Pixels')).length,
-      Releases: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Releases')).length,
-      Logo: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Logo')).length,
-      Communication: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Communication')).length,
-      Cases: DATALAYER_SVGS.filter((entry) => svgInSegment(entry, 'Cases')).length,
+      Hero: textFiltered.filter((entry) => svgInSegment(entry, 'Hero')).length,
+      System: textFiltered.filter((entry) => svgInSegment(entry, 'System')).length,
+      Features: textFiltered.filter((entry) => svgInSegment(entry, 'Features')).length,
+      Artifacts: textFiltered.filter((entry) => svgInSegment(entry, 'Artifacts')).length,
+      Pixels: textFiltered.filter((entry) => svgInSegment(entry, 'Pixels')).length,
+      Releases: textFiltered.filter((entry) => svgInSegment(entry, 'Releases')).length,
+      Logo: textFiltered.filter((entry) => svgInSegment(entry, 'Logo')).length,
+      Communication: textFiltered.filter((entry) => svgInSegment(entry, 'Communication')).length,
+      Cases: textFiltered.filter((entry) => svgInSegment(entry, 'Cases')).length,
     };
-  }, []);
+  }, [normalizedFilter]);
 
   const filteredSvgs = useMemo(() => {
-    const entries = DATALAYER_SVGS.filter((entry) => svgInSegment(entry, segment));
+    const entries = DATALAYER_SVGS
+      .filter(filterMatches)
+      .filter((entry) => svgInSegment(entry, segment));
     if (segment === 'Artifacts') {
       return [...entries].sort((a, b) => {
         return (ARTIFACTS_SVG_ORDER[a.name] ?? 99) - (ARTIFACTS_SVG_ORDER[b.name] ?? 99);
@@ -908,7 +927,7 @@ export function SvgPage() {
       }
       return aTrailing ? 1 : -1;
     });
-  }, [segment]);
+  }, [segment, normalizedFilter]);
 
   if (isDetailRoute) {
     return <SvgDetailPage />;
@@ -921,11 +940,25 @@ export function SvgPage() {
         <Text sx={{ color: 'fg.muted' }}>
           Gallery generated from local design SVG exports.
         </Text>
+        <Box sx={{ mt: 3, maxWidth: 420 }}>
+          <TextInput
+            block
+            value={filter}
+            onChange={(event) => setFilter(event.target.value)}
+            placeholder="Filter SVGs by name..."
+            aria-label="Filter SVGs by name"
+          />
+        </Box>
         <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
           <SegmentControl value={segment} onChange={setSegment} counts={segmentCounts} />
         </Box>
       </Box>
       <Box sx={{ display: 'grid', gridTemplateColumns: ['1fr', '1fr', '1fr 1fr'], gap: 3 }}>
+        {filteredSvgs.length === 0 && (
+          <Box sx={{ gridColumn: '1 / -1', p: 4, border: '1px solid', borderColor: 'border.default', borderRadius: 2, bg: 'canvas.subtle' }}>
+            <Text sx={{ color: 'fg.muted' }}>No SVG matches this filter in the current segment.</Text>
+          </Box>
+        )}
         {filteredSvgs.map((entry) => (
           <SvgCard key={entry.name} {...entry} />
         ))}
