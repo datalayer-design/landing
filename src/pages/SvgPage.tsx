@@ -23,9 +23,9 @@ type SvgEntry = {
   Component: SvgComponent;
 };
 
-type SvgSegment = 'Hero' | 'Features' | 'System' | 'Artifacts' | 'Pixels' | 'Releases' | 'Logo' | 'Communication' | 'Cases';
+type SvgSegment = 'All' | 'Hero' | 'Features' | 'System' | 'Artifacts' | 'Pixels' | 'Releases' | 'Logo' | 'Communication' | 'Cases';
 
-const SEGMENTS: SvgSegment[] = ['Hero', 'Features', 'System', 'Artifacts', 'Pixels', 'Communication', 'Cases', 'Releases', 'Logo'];
+const SEGMENTS: SvgSegment[] = ['All', 'Hero', 'Features', 'System', 'Artifacts', 'Pixels', 'Communication', 'Cases', 'Releases', 'Logo'];
 const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   (acc, segment) => {
     acc[segment.toLowerCase()] = segment;
@@ -581,6 +581,9 @@ function isPixelsSvg(name: string) {
 }
 
 function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
+  if (segment === 'All') {
+    return true;
+  }
   if (segment === 'Hero') {
     return isHeroSvg(entry.name);
   }
@@ -866,7 +869,7 @@ export function SvgPage() {
   const { name } = useParams<{ name?: string }>();
   const routeSegment = name ? SEGMENT_BY_SLUG[name.toLowerCase()] : undefined;
   const isDetailRoute = !!name && !routeSegment;
-  const [segment, setSegmentState] = useState<SvgSegment>(routeSegment ?? 'Hero');
+  const [segment, setSegmentState] = useState<SvgSegment>(routeSegment ?? 'All');
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
@@ -877,7 +880,7 @@ export function SvgPage() {
 
   const setSegment = (next: SvgSegment) => {
     setSegmentState(next);
-    navigate(`/svg/${slugForSegment(next)}`);
+    navigate(next === 'All' ? '/svg' : `/svg/${slugForSegment(next)}`);
   };
 
   const normalizedFilter = filter.trim().toLowerCase();
@@ -892,6 +895,7 @@ export function SvgPage() {
   const segmentCounts = useMemo(() => {
     const textFiltered = DATALAYER_SVGS.filter(filterMatches);
     return {
+      All: textFiltered.length,
       Hero: textFiltered.filter((entry) => svgInSegment(entry, 'Hero')).length,
       System: textFiltered.filter((entry) => svgInSegment(entry, 'System')).length,
       Features: textFiltered.filter((entry) => svgInSegment(entry, 'Features')).length,
