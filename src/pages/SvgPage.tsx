@@ -532,10 +532,6 @@ const DATALAYER_SVGS: SvgEntry[] = [
     Component: SvgAI2,
   },
   {
-    name: 'SvgDI',
-    Component: SvgDI,
-  },
-  {
     name: 'SvgLinesColored',
     Component: SvgLinesColored,
   },
