@@ -1,9 +1,11 @@
-import { useEffect, useMemo, useRef, useState, type SVGProps } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Box, Button, Heading, Text, TextInput } from '@primer/react';
+import { ArrowLeftIcon } from '@primer/octicons-react';
 import {
   AI,
   AI2,
+  DI,
   DatalayerLogo,
   DatalayerLogoText,
   DatalayerTextAI,
@@ -33,7 +35,8 @@ const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   },
   {} as Record<string, SvgSegment>,
 );
-const slugForSegment = (segment: SvgSegment) => segment.toLowerCase();
+SEGMENT_BY_SLUG.logos = 'Logo';
+const slugForSegment = (segment: SvgSegment) => (segment === 'Logo' ? 'logos' : segment.toLowerCase());
 
 const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
 
@@ -399,6 +402,34 @@ function SvgAI2(props?: SVGProps<SVGSVGElement>) {
   );
 }
 
+function SvgDI(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="DI mark"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <DI size={96} variant={theme} colorMode={effectiveColorMode} />
+    </Box>
+  );
+}
+
 function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
   const { colorMode, theme } = useThemeStore();
   const effectiveColorMode: 'light' | 'dark' =
@@ -434,6 +465,7 @@ function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
   SvgBlackSnake: SvgBlackSnakeInline,
+  SvgDI,
   SvgLinesLogo,
   SvgDatalayerLogo,
   SvgDatalayerTextLogo,
@@ -500,6 +532,10 @@ const DATALAYER_SVGS: SvgEntry[] = [
     Component: SvgAI2,
   },
   {
+    name: 'SvgDI',
+    Component: SvgDI,
+  },
+  {
     name: 'SvgLinesColored',
     Component: SvgLinesColored,
   },
@@ -510,6 +546,7 @@ const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
 const LOGO_SVG_NAMES = new Set([
   'SvgAI',
   'SvgAI2',
+  'SvgDI',
   'SvgDatalayerLogo',
   'SvgDatalayerTextLogo',
   'SvgDatalayerTextLogoFirst',
@@ -750,7 +787,7 @@ function SvgCard({ name, Component }: SvgEntry) {
         tabIndex={0}
         aria-label={`Open ${name}`}
         onClick={openDetail}
-        onKeyDown={(event) => {
+        onKeyDown={(event: ReactKeyboardEvent<HTMLDivElement>) => {
           if (event.key === 'Enter' || event.key === ' ') {
             event.preventDefault();
             openDetail();
@@ -814,13 +851,16 @@ function SvgCard({ name, Component }: SvgEntry) {
 function SvgDetailPage() {
   const navigate = useNavigate();
   const { name } = useParams<{ name?: string }>();
-  const entry = useMemo(() => DATALAYER_SVGS.find((item) => item.name === name), [name]);
+  const resolvedName = name?.toLowerCase() === 'logo' ? 'SvgDI' : name;
+  const entry = useMemo(() => DATALAYER_SVGS.find((item) => item.name === resolvedName), [resolvedName]);
   const ref = useRef<HTMLDivElement | null>(null);
 
   if (!entry) {
     return (
-      <Box sx={{ maxWidth: 1200, mx: 'auto', px: 4, py: 5 }}>
-        <Text>SVG not found.</Text>
+      <Box sx={{ px: 4, py: 5 }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+          <Text>SVG not found.</Text>
+        </Box>
       </Box>
     );
   }
@@ -828,9 +868,16 @@ function SvgDetailPage() {
   const Component = entry.Component;
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', px: 4, py: 5 }}>
+    <Box sx={{ px: 4, py: 5 }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-        <Button onClick={() => navigate('/svg')}>Back</Button>
+        <Button
+          variant="invisible"
+          leadingVisual={ArrowLeftIcon}
+          onClick={() => navigate('/svg')}
+        >
+          Back
+        </Button>
         <Button onClick={async () => {
           const svg = ref.current?.querySelector('svg');
           if (!svg) return;
@@ -860,6 +907,7 @@ function SvgDetailPage() {
       >
         <Component style={{ width: '100%', maxWidth: 900 }} />
       </Box>
+      </Box>
     </Box>
   );
 }
@@ -867,7 +915,8 @@ function SvgDetailPage() {
 export function SvgPage() {
   const navigate = useNavigate();
   const { name } = useParams<{ name?: string }>();
-  const routeSegment = name ? SEGMENT_BY_SLUG[name.toLowerCase()] : undefined;
+  const normalizedName = name?.toLowerCase();
+  const routeSegment = normalizedName && normalizedName !== 'logo' ? SEGMENT_BY_SLUG[normalizedName] : undefined;
   const isDetailRoute = !!name && !routeSegment;
   const [segment, setSegmentState] = useState<SvgSegment>(routeSegment ?? 'All');
   const [filter, setFilter] = useState('');
@@ -938,7 +987,8 @@ export function SvgPage() {
   }
 
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', px: 4, py: 5 }}>
+    <Box sx={{ px: 4, py: 5 }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       <Box sx={{ border: '1px solid', borderColor: 'border.default', borderRadius: 2, bg: 'canvas.subtle', p: [3, 4], mb: 4 }}>
         <Heading as="h2" sx={{ fontSize: 4, mb: 2 }}>SVG Gallery</Heading>
         <Text sx={{ color: 'fg.muted' }}>
@@ -966,6 +1016,7 @@ export function SvgPage() {
         {filteredSvgs.map((entry) => (
           <SvgCard key={entry.name} {...entry} />
         ))}
+      </Box>
       </Box>
     </Box>
   );

@@ -26,7 +26,7 @@ import * as eggsIcons from '@datalayer/icons-react/eggs';
 const SpanStyle = styled.span`
   span {
     margin-right: 25px;
-  },
+  }
 `;
 
 const BorderStyle = styled.span`
@@ -320,14 +320,14 @@ const DatalayerIcons = () => {
   */
   return (
     <>
-      <Box
-        sx={{
-          maxWidth: 1200,
-          mx: 'auto',
-          p: 4,
-          '--datalayer-icon-fg': palette.primary,
-        }}
-      >
+      <Box sx={{ px: 4, py: 4 }}>
+        <Box
+          sx={{
+            maxWidth: 1200,
+            mx: 'auto',
+            '--datalayer-icon-fg': palette.primary,
+          }}
+        >
         <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 3, flexWrap: 'wrap' }}>
           <Box>
             <Heading as="h1" sx={{ m: 0, mb: 2, fontSize: 5 }}>
@@ -391,6 +391,7 @@ const DatalayerIcons = () => {
         :
           <SummaryIcons names={names} icons={icons} />
         }
+        </Box>
       </Box>
     </>
   )

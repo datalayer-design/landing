@@ -4,7 +4,8 @@ import { SvgAgentsHomeHero } from '../svg';
 
 export function HomePage() {
   return (
-    <Box sx={{ maxWidth: 1200, mx: 'auto', px: 4, py: 5 }}>
+    <Box sx={{ px: 4, py: 5 }}>
+      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
       {/* Hero */}
       <Box
         sx={{
@@ -161,6 +162,7 @@ export function HomePage() {
           <Link as={RouterLink} to="/icons">Browse icons &rarr;</Link>
           <Link href="https://datalayer.ai" target="_blank" rel="noopener noreferrer">Visit datalayer.ai &rarr;</Link>
         </Box>
+      </Box>
       </Box>
     </Box>
   );
