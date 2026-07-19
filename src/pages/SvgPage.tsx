@@ -25,9 +25,9 @@ type SvgEntry = {
   Component: SvgComponent;
 };
 
-type SvgSegment = 'All' | 'Hero' | 'Features' | 'System' | 'Artifacts' | 'Pixels' | 'Releases' | 'Logo' | 'Communication' | 'Cases';
+type SvgSegment = 'All' | 'Heros' | 'Features' | 'Systems' | 'Artifacts' | 'Pixels' | 'Pictos' | 'Communication' | 'Cases' | 'Releases' | 'Logos';
 
-const SEGMENTS: SvgSegment[] = ['All', 'Hero', 'Features', 'System', 'Artifacts', 'Pixels', 'Communication', 'Cases', 'Releases', 'Logo'];
+const SEGMENTS: SvgSegment[] = ['All', 'Artifacts', 'Cases', 'Communication', 'Features', 'Heros', 'Logos', 'Pictos', 'Pixels', 'Releases', 'Systems'];
 const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   (acc, segment) => {
     acc[segment.toLowerCase()] = segment;
@@ -35,8 +35,10 @@ const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   },
   {} as Record<string, SvgSegment>,
 );
-SEGMENT_BY_SLUG.logos = 'Logo';
-const slugForSegment = (segment: SvgSegment) => (segment === 'Logo' ? 'logos' : segment.toLowerCase());
+SEGMENT_BY_SLUG.logo = 'Logos';
+SEGMENT_BY_SLUG.hero = 'Heros';
+SEGMENT_BY_SLUG.system = 'Systems';
+const slugForSegment = (segment: SvgSegment) => segment.toLowerCase();
 
 const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
 
@@ -551,12 +553,6 @@ const LOGO_SVG_NAMES = new Set([
   'SvgLinesColored',
   'SvgLinesLogo',
 ]);
-const LOGO_SVG_TRAILING_NAMES = new Set(['SvgLines', 'SvgLinesColored', 'SvgLinesLogo']);
-const LOGO_SVG_TRAILING_ORDER: Record<string, number> = {
-  SvgLines: 0,
-  SvgLinesColored: 1,
-  SvgLinesLogo: 2,
-};
 const COMMUNICATION_SVG_NAMES = new Set(['SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgDiscord', 'SvgRadar']);
 const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero']);
 const ARTIFACTS_SVG_NAMES = new Set([
@@ -570,16 +566,7 @@ const ARTIFACTS_SVG_NAMES = new Set([
   'SvgPublication',
 ]);
 const PIXELS_SVG_NAMES = new Set(['SvgPixel1', 'SvgPixel2']);
-const ARTIFACTS_SVG_ORDER: Record<string, number> = {
-  SvgNotebookArtifact: 0,
-  SvgDocumentArtifact: 1,
-  SvgCellArtifact: 2,
-  SvgLessonArtifact: 3,
-  SvgExerciseArtifact: 4,
-  SvgAssignmentArtifact: 5,
-  SvgDataset: 6,
-  SvgPublication: 7,
-};
+const PICTOS_SVG_NAMES = new Set(['SvgSkubble', 'SvgEricCharles']);
 
 function isCaseSvg(name: string) {
   return CASES_SVG_NAMES.has(name);
@@ -613,20 +600,24 @@ function isPixelsSvg(name: string) {
   return PIXELS_SVG_NAMES.has(name);
 }
 
+function isPictosSvg(name: string) {
+  return PICTOS_SVG_NAMES.has(name);
+}
+
 function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'All') {
     return true;
   }
-  if (segment === 'Hero') {
+  if (segment === 'Heros') {
     return isHeroSvg(entry.name);
   }
   if (segment === 'Releases') {
     return isReleaseSvg(entry.name);
   }
-  if (segment === 'System') {
+  if (segment === 'Systems') {
     return isSystemSvg(entry.name);
   }
-  if (segment === 'Logo') {
+  if (segment === 'Logos') {
     return isLogoSvg(entry.name);
   }
   if (segment === 'Communication') {
@@ -637,6 +628,9 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   }
   if (segment === 'Pixels') {
     return isPixelsSvg(entry.name);
+  }
+  if (segment === 'Pictos') {
+    return isPictosSvg(entry.name);
   }
   if (segment === 'Cases') {
     return isCaseSvg(entry.name);
@@ -649,6 +643,7 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
     && !isCommunicationSvg(entry.name)
     && !isArtifactsSvg(entry.name)
     && !isPixelsSvg(entry.name)
+    && !isPictosSvg(entry.name)
     && !isCaseSvg(entry.name)
   );
 }
@@ -912,7 +907,7 @@ export function SvgPage() {
   const navigate = useNavigate();
   const { name } = useParams<{ name?: string }>();
   const normalizedName = name?.toLowerCase();
-  const routeSegment = normalizedName && normalizedName !== 'logo' ? SEGMENT_BY_SLUG[normalizedName] : undefined;
+  const routeSegment = normalizedName ? SEGMENT_BY_SLUG[normalizedName] : undefined;
   const isDetailRoute = !!name && !routeSegment;
   const [segment, setSegmentState] = useState<SvgSegment>(routeSegment ?? 'All');
   const [filter, setFilter] = useState('');
@@ -941,41 +936,24 @@ export function SvgPage() {
     const textFiltered = DATALAYER_SVGS.filter(filterMatches);
     return {
       All: textFiltered.length,
-      Hero: textFiltered.filter((entry) => svgInSegment(entry, 'Hero')).length,
-      System: textFiltered.filter((entry) => svgInSegment(entry, 'System')).length,
+      Heros: textFiltered.filter((entry) => svgInSegment(entry, 'Heros')).length,
+      Systems: textFiltered.filter((entry) => svgInSegment(entry, 'Systems')).length,
       Features: textFiltered.filter((entry) => svgInSegment(entry, 'Features')).length,
       Artifacts: textFiltered.filter((entry) => svgInSegment(entry, 'Artifacts')).length,
       Pixels: textFiltered.filter((entry) => svgInSegment(entry, 'Pixels')).length,
+      Pictos: textFiltered.filter((entry) => svgInSegment(entry, 'Pictos')).length,
       Releases: textFiltered.filter((entry) => svgInSegment(entry, 'Releases')).length,
-      Logo: textFiltered.filter((entry) => svgInSegment(entry, 'Logo')).length,
+      Logos: textFiltered.filter((entry) => svgInSegment(entry, 'Logos')).length,
       Communication: textFiltered.filter((entry) => svgInSegment(entry, 'Communication')).length,
       Cases: textFiltered.filter((entry) => svgInSegment(entry, 'Cases')).length,
     };
   }, [normalizedFilter]);
 
   const filteredSvgs = useMemo(() => {
-    const entries = DATALAYER_SVGS
+    return DATALAYER_SVGS
       .filter(filterMatches)
-      .filter((entry) => svgInSegment(entry, segment));
-    if (segment === 'Artifacts') {
-      return [...entries].sort((a, b) => {
-        return (ARTIFACTS_SVG_ORDER[a.name] ?? 99) - (ARTIFACTS_SVG_ORDER[b.name] ?? 99);
-      });
-    }
-    if (segment !== 'Logo') {
-      return entries;
-    }
-    return [...entries].sort((a, b) => {
-      const aTrailing = LOGO_SVG_TRAILING_NAMES.has(a.name);
-      const bTrailing = LOGO_SVG_TRAILING_NAMES.has(b.name);
-      if (aTrailing === bTrailing) {
-        if (aTrailing && bTrailing) {
-          return (LOGO_SVG_TRAILING_ORDER[a.name] ?? 99) - (LOGO_SVG_TRAILING_ORDER[b.name] ?? 99);
-        }
-        return 0;
-      }
-      return aTrailing ? 1 : -1;
-    });
+      .filter((entry) => svgInSegment(entry, segment))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [segment, normalizedFilter]);
 
   if (isDetailRoute) {

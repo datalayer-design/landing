@@ -23,6 +23,8 @@ const dedupe = [
   'zustand',
 ];
 
+const optimizeInclude = dedupe.filter((id) => id !== '@primer/primitives');
+
 export default defineConfig({
   plugins: [
     react(),
@@ -35,7 +37,7 @@ export default defineConfig({
     dedupe,
   },
   optimizeDeps: {
-    include: dedupe,
+    include: optimizeInclude,
   },
 });
 

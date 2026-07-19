@@ -57,6 +57,8 @@ export { SvgLines } from './SvgLines';
 export { SvgPublication } from './SvgPublication';
 export { SvgPixel1 } from './SvgPixel1';
 export { SvgPixel2 } from './SvgPixel2';
+export { SvgSkubble } from './SvgSkubble';
+export { SvgEricCharles } from './SvgEricCharles';
 export { SvgPrivacyHero } from './SvgPrivacyHero';
 export { SvgTermsHero } from './SvgTermsHero';
 export { SvgNotFound } from './SvgNotFound';

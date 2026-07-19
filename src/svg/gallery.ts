@@ -50,6 +50,8 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgPublication',
   'SvgPixel1',
   'SvgPixel2',
+  'SvgSkubble',
+  'SvgEricCharles',
   'SvgPrivacyHero',
   'SvgTermsHero',
   'SvgNotFound',
