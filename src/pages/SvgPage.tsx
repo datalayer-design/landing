@@ -1,7 +1,9 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type SVGProps } from 'react';
+import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type RefObject, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, Heading, Text, TextInput } from '@primer/react';
+import { ActionList, ActionMenu, Box, Button, Heading, Text, TextInput } from '@primer/react';
 import { ArrowLeftIcon } from '@primer/octicons-react';
+import GIF from 'gif.js';
+import gifWorkerUrl from 'gif.js/dist/gif.worker.js?url';
 import {
   AI,
   AI2,
@@ -701,14 +703,38 @@ function SegmentControl({
   );
 }
 
-async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 'svg' | 'png' | 'jpg') {
-  const clone = svg.cloneNode(true) as SVGSVGElement;
-  const rect = svg.getBoundingClientRect();
-  const width = Math.max(1, Math.round(rect.width));
-  const height = Math.max(1, Math.round(rect.height));
+type RasterFormat = 'png' | 'jpg';
+type ExportScale = 1 | 2 | 4;
 
-  clone.setAttribute('width', String(width));
-  clone.setAttribute('height', String(height));
+function getSvgExportDimensions(svg: SVGSVGElement | null): { width: number; height: number } | null {
+  if (!svg) {
+    return null;
+  }
+  const rect = svg.getBoundingClientRect();
+  return {
+    width: Math.max(1, Math.round(rect.width)),
+    height: Math.max(1, Math.round(rect.height)),
+  };
+}
+
+async function downloadSvgElement(
+  svg: SVGSVGElement,
+  fileName: string,
+  format: 'svg' | RasterFormat,
+  scale: ExportScale = 1,
+) {
+  const clone = svg.cloneNode(true) as SVGSVGElement;
+  const dimensions = getSvgExportDimensions(svg);
+  if (!dimensions) {
+    return;
+  }
+  const width = dimensions.width;
+  const height = dimensions.height;
+  const targetWidth = width * scale;
+  const targetHeight = height * scale;
+
+  clone.setAttribute('width', String(targetWidth));
+  clone.setAttribute('height', String(targetHeight));
   const serializer = new XMLSerializer();
   const markup = serializer.serializeToString(clone);
 
@@ -727,20 +753,21 @@ async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 
   const url = URL.createObjectURL(blob);
   const mimeType = format === 'jpg' ? 'image/jpeg' : 'image/png';
   const extension = format === 'jpg' ? 'jpg' : 'png';
+  const fileScaleSuffix = scale === 1 ? '' : `@${scale}x`;
   await new Promise<void>((resolve, reject) => {
     const img = new Image();
     img.onload = () => {
       const canvas = document.createElement('canvas');
-      canvas.width = width;
-      canvas.height = height;
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
       const ctx = canvas.getContext('2d');
       if (!ctx) {
         URL.revokeObjectURL(url);
         reject(new Error('Unable to create canvas context'));
         return;
       }
-      ctx.clearRect(0, 0, width, height);
-      ctx.drawImage(img, 0, 0, width, height);
+      ctx.clearRect(0, 0, targetWidth, targetHeight);
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
       canvas.toBlob((output) => {
         URL.revokeObjectURL(url);
         if (!output) {
@@ -750,7 +777,7 @@ async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 
         const outUrl = URL.createObjectURL(output);
         const link = document.createElement('a');
         link.href = outUrl;
-        link.download = `${fileName}.${extension}`;
+        link.download = `${fileName}${fileScaleSuffix}.${extension}`;
         link.click();
         URL.revokeObjectURL(outUrl);
         resolve();
@@ -762,6 +789,264 @@ async function downloadSvgElement(svg: SVGSVGElement, fileName: string, format: 
     };
     img.src = url;
   });
+}
+
+async function downloadAnimatedGif(
+  svg: SVGSVGElement,
+  fileName: string,
+  scale: ExportScale = 1,
+  durationMs = 10_000,
+) {
+  const dimensions = getSvgExportDimensions(svg);
+  if (!dimensions) {
+    return;
+  }
+  const sourceWidth = dimensions.width;
+  const sourceHeight = dimensions.height;
+  const width = sourceWidth * scale;
+  const height = sourceHeight * scale;
+
+  const gif = new GIF({
+    workers: 2,
+    quality: 10,
+    workerScript: gifWorkerUrl,
+    width,
+    height,
+    repeat: 0,
+  });
+
+  const fps = 10;
+  const frameDelay = Math.round(1000 / fps);
+  const frameCount = Math.max(1, Math.floor(durationMs / frameDelay));
+
+  const stagingHost = document.createElement('div');
+  stagingHost.style.position = 'fixed';
+  stagingHost.style.left = '-100000px';
+  stagingHost.style.top = '-100000px';
+  stagingHost.style.width = `${sourceWidth}px`;
+  stagingHost.style.height = `${sourceHeight}px`;
+  stagingHost.style.pointerEvents = 'none';
+  stagingHost.style.opacity = '0';
+
+  const workingSvg = svg.cloneNode(true) as SVGSVGElement;
+  workingSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  workingSvg.setAttribute('width', String(sourceWidth));
+  workingSvg.setAttribute('height', String(sourceHeight));
+  workingSvg.style.width = `${sourceWidth}px`;
+  workingSvg.style.height = `${sourceHeight}px`;
+  workingSvg.style.display = 'block';
+  stagingHost.appendChild(workingSvg);
+  document.body.appendChild(stagingHost);
+
+  const ANIMATION_TAGS = new Set(['animate', 'animatemotion', 'animatetransform', 'set']);
+
+  const formatMatrix = (m: DOMMatrix) =>
+    `matrix(${m.a},${m.b},${m.c},${m.d},${m.e},${m.f})`;
+
+  // Bake the current animated state (transforms from animateMotion /
+  // animateTransform, opacity from animate) of the live SVG into a static
+  // snapshot. Serializing an SVG with SMIL animations and loading it through an
+  // <img> always renders it at time 0, so we must freeze the computed values.
+  const bakeAndRasterizeFrame = async () => {
+    const snapshot = workingSvg.cloneNode(true) as SVGSVGElement;
+
+    const liveElements = Array.from(workingSvg.querySelectorAll<SVGElement>('*'));
+    const snapElements = Array.from(snapshot.querySelectorAll<SVGElement>('*'));
+
+    for (let index = 0; index < liveElements.length; index += 1) {
+      const liveEl = liveElements[index];
+      const snapEl = snapElements[index];
+      if (!snapEl) {
+        continue;
+      }
+
+      if (liveEl instanceof SVGGraphicsElement && liveEl.parentNode) {
+        const parent = liveEl.parentNode as Element;
+        const parentCtm =
+          parent instanceof SVGGraphicsElement ? parent.getScreenCTM() : null;
+        const elCtm = liveEl.getScreenCTM();
+        if (parentCtm && elCtm) {
+          const localMatrix = parentCtm.inverse().multiply(elCtm);
+          snapEl.setAttribute('transform', formatMatrix(localMatrix));
+        }
+
+        const computedOpacity = window.getComputedStyle(liveEl).opacity;
+        if (computedOpacity && computedOpacity !== '1') {
+          snapEl.setAttribute('opacity', computedOpacity);
+        }
+      }
+    }
+
+    // Remove all animation elements so the snapshot renders as a frozen frame.
+    snapshot
+      .querySelectorAll('*')
+      .forEach((node) => {
+        if (ANIMATION_TAGS.has(node.tagName.toLowerCase())) {
+          node.parentNode?.removeChild(node);
+        }
+      });
+
+    const markup = new XMLSerializer().serializeToString(snapshot);
+    const blob = new Blob([markup], { type: 'image/svg+xml;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    try {
+      const image = await new Promise<HTMLImageElement>((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = () => reject(new Error('Unable to render animated SVG frame'));
+        img.src = url;
+      });
+
+      const frameCanvas = document.createElement('canvas');
+      frameCanvas.width = width;
+      frameCanvas.height = height;
+      const ctx = frameCanvas.getContext('2d', { willReadFrequently: true });
+      if (!ctx) {
+        throw new Error('Unable to create canvas context');
+      }
+      ctx.clearRect(0, 0, width, height);
+      ctx.drawImage(image, 0, 0, width, height);
+      return frameCanvas;
+    } finally {
+      URL.revokeObjectURL(url);
+    }
+  };
+
+  try {
+    if (typeof workingSvg.pauseAnimations === 'function') {
+      workingSvg.pauseAnimations();
+    }
+
+    for (let i = 0; i < frameCount; i += 1) {
+      if (typeof workingSvg.setCurrentTime === 'function') {
+        workingSvg.setCurrentTime((i * frameDelay) / 1000);
+      }
+      // Force the SMIL engine to update animated values before reading them.
+      workingSvg.getBoundingClientRect();
+      const frameCanvas = await bakeAndRasterizeFrame();
+      gif.addFrame(frameCanvas, { copy: true, delay: frameDelay });
+    }
+  } finally {
+    document.body.removeChild(stagingHost);
+  }
+
+  const output = await new Promise<Blob>((resolve) => {
+    gif.on('finished', (gifBlob: Blob) => resolve(gifBlob));
+    gif.render();
+  });
+
+  const outUrl = URL.createObjectURL(output);
+  const fileScaleSuffix = scale === 1 ? '' : `@${scale}x`;
+  const link = document.createElement('a');
+  link.href = outUrl;
+  link.download = `${fileName}${fileScaleSuffix}.gif`;
+  link.click();
+  URL.revokeObjectURL(outUrl);
+}
+
+function RasterDownloadMenu({
+  label,
+  format,
+  fileName,
+  containerRef,
+}: {
+  label: string;
+  format: RasterFormat;
+  fileName: string;
+  containerRef: RefObject<HTMLDivElement | null>;
+}) {
+  const svg = containerRef.current?.querySelector('svg') ?? null;
+  const dimensions = getSvgExportDimensions(svg);
+
+  const sizeLabel = (scale: ExportScale) => {
+    if (!dimensions) {
+      return 'unknown';
+    }
+    return `${dimensions.width * scale}x${dimensions.height * scale}`;
+  };
+
+  const handleExport = async (scale: ExportScale) => {
+    const target = containerRef.current?.querySelector('svg');
+    if (!target) {
+      return;
+    }
+    await downloadSvgElement(target, fileName, format, scale);
+  };
+
+  return (
+    <ActionMenu>
+      <ActionMenu.Button>{label}</ActionMenu.Button>
+      <ActionMenu.Overlay>
+        <ActionList>
+          <ActionList.Item onSelect={() => { void handleExport(1); }}>
+            Current size ({sizeLabel(1)})
+          </ActionList.Item>
+          <ActionList.Item onSelect={() => { void handleExport(2); }}>
+            Double ({sizeLabel(2)})
+          </ActionList.Item>
+          <ActionList.Item onSelect={() => { void handleExport(4); }}>
+            Double again ({sizeLabel(4)})
+          </ActionList.Item>
+        </ActionList>
+      </ActionMenu.Overlay>
+    </ActionMenu>
+  );
+}
+
+function GifDownloadMenu({
+  fileName,
+  containerRef,
+}: {
+  fileName: string;
+  containerRef: RefObject<HTMLDivElement | null>;
+}) {
+  const [isGenerating, setIsGenerating] = useState(false);
+  const svg = containerRef.current?.querySelector('svg') ?? null;
+  const dimensions = getSvgExportDimensions(svg);
+
+  const sizeLabel = (scale: ExportScale) => {
+    if (!dimensions) {
+      return 'unknown';
+    }
+    return `${dimensions.width * scale}x${dimensions.height * scale}`;
+  };
+
+  const handleDownload = async (scale: ExportScale) => {
+    const targetSvg = containerRef.current?.querySelector('svg');
+    if (!targetSvg || isGenerating) {
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+      await downloadAnimatedGif(targetSvg, fileName, scale, 10_000);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  return (
+    <ActionMenu>
+      <ActionMenu.Button disabled={isGenerating}>
+        {isGenerating ? 'Generating GIF…' : 'Download GIF (10s)'}
+      </ActionMenu.Button>
+      <ActionMenu.Overlay>
+        <ActionList>
+          <ActionList.Item onSelect={() => { void handleDownload(1); }}>
+            Current size ({sizeLabel(1)})
+          </ActionList.Item>
+          <ActionList.Item onSelect={() => { void handleDownload(2); }}>
+            Double ({sizeLabel(2)})
+          </ActionList.Item>
+          <ActionList.Item onSelect={() => { void handleDownload(4); }}>
+            Double again ({sizeLabel(4)})
+          </ActionList.Item>
+        </ActionList>
+      </ActionMenu.Overlay>
+    </ActionMenu>
+  );
 }
 
 function SvgCard({ name, Component }: SvgEntry) {
@@ -813,20 +1098,9 @@ function SvgCard({ name, Component }: SvgEntry) {
       </Box>
       <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
         <Button onClick={openDetail}>View</Button>
-        <Button onClick={async () => {
-          const svg = ref.current?.querySelector('svg');
-          if (!svg) return;
-          await downloadSvgElement(svg, name, 'png');
-        }}>
-          Download PNG
-        </Button>
-        <Button onClick={async () => {
-          const svg = ref.current?.querySelector('svg');
-          if (!svg) return;
-          await downloadSvgElement(svg, name, 'jpg');
-        }}>
-          Download JPG
-        </Button>
+        <RasterDownloadMenu label="Download PNG" format="png" fileName={name} containerRef={ref} />
+        <RasterDownloadMenu label="Download JPG" format="jpg" fileName={name} containerRef={ref} />
+        <GifDownloadMenu fileName={name} containerRef={ref} />
         <Button onClick={async () => {
           const svg = ref.current?.querySelector('svg');
           if (!svg) return;
@@ -869,20 +1143,9 @@ function SvgDetailPage() {
         >
           Back
         </Button>
-        <Button onClick={async () => {
-          const svg = ref.current?.querySelector('svg');
-          if (!svg) return;
-          await downloadSvgElement(svg, entry.name, 'png');
-        }}>
-          Download PNG
-        </Button>
-        <Button onClick={async () => {
-          const svg = ref.current?.querySelector('svg');
-          if (!svg) return;
-          await downloadSvgElement(svg, entry.name, 'jpg');
-        }}>
-          Download JPG
-        </Button>
+        <RasterDownloadMenu label="Download PNG" format="png" fileName={entry.name} containerRef={ref} />
+        <RasterDownloadMenu label="Download JPG" format="jpg" fileName={entry.name} containerRef={ref} />
+        <GifDownloadMenu fileName={entry.name} containerRef={ref} />
         <Button onClick={async () => {
           const svg = ref.current?.querySelector('svg');
           if (!svg) return;
