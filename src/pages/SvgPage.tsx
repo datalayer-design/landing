@@ -555,7 +555,7 @@ const LOGO_SVG_NAMES = new Set([
   'SvgLinesColored',
   'SvgLinesLogo',
 ]);
-const COMMUNICATION_SVG_NAMES = new Set(['SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgDiscord', 'SvgRadar']);
+const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgOSAContributions', 'SvgRadar']);
 const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero']);
 const ARTIFACTS_SVG_NAMES = new Set([
   'SvgNotebookArtifact',
@@ -715,6 +715,26 @@ function getSvgExportDimensions(svg: SVGSVGElement | null): { width: number; hei
     width: Math.max(1, Math.round(rect.width)),
     height: Math.max(1, Math.round(rect.height)),
   };
+}
+
+function getSvgDisplayDimensions(svg: SVGSVGElement | null): { width: number; height: number } | null {
+  if (!svg) {
+    return null;
+  }
+  const measured = getSvgExportDimensions(svg);
+  if (measured) {
+    return measured;
+  }
+
+  const viewBox = svg.viewBox?.baseVal;
+  if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
+    return {
+      width: Math.round(viewBox.width),
+      height: Math.round(viewBox.height),
+    };
+  }
+
+  return null;
 }
 
 async function downloadSvgElement(
@@ -955,12 +975,24 @@ function RasterDownloadMenu({
   fileName: string;
   containerRef: RefObject<HTMLDivElement | null>;
 }) {
-  const svg = containerRef.current?.querySelector('svg') ?? null;
-  const dimensions = getSvgExportDimensions(svg);
+  const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
+
+  useEffect(() => {
+    const measure = () => {
+      const svg = containerRef.current?.querySelector('svg') ?? null;
+      setDimensions(getSvgDisplayDimensions(svg));
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+    };
+  }, [containerRef]);
 
   const sizeLabel = (scale: ExportScale) => {
     if (!dimensions) {
-      return 'unknown';
+      return 'unavailable';
     }
     return `${dimensions.width * scale}x${dimensions.height * scale}`;
   };
@@ -985,7 +1017,7 @@ function RasterDownloadMenu({
             Double ({sizeLabel(2)})
           </ActionList.Item>
           <ActionList.Item onSelect={() => { void handleExport(4); }}>
-            Double again ({sizeLabel(4)})
+            Quadruple ({sizeLabel(4)})
           </ActionList.Item>
         </ActionList>
       </ActionMenu.Overlay>
@@ -1001,12 +1033,24 @@ function GifDownloadMenu({
   containerRef: RefObject<HTMLDivElement | null>;
 }) {
   const [isGenerating, setIsGenerating] = useState(false);
-  const svg = containerRef.current?.querySelector('svg') ?? null;
-  const dimensions = getSvgExportDimensions(svg);
+  const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(null);
+
+  useEffect(() => {
+    const measure = () => {
+      const svg = containerRef.current?.querySelector('svg') ?? null;
+      setDimensions(getSvgDisplayDimensions(svg));
+    };
+
+    measure();
+    window.addEventListener('resize', measure);
+    return () => {
+      window.removeEventListener('resize', measure);
+    };
+  }, [containerRef]);
 
   const sizeLabel = (scale: ExportScale) => {
     if (!dimensions) {
-      return 'unknown';
+      return 'unavailable';
     }
     return `${dimensions.width * scale}x${dimensions.height * scale}`;
   };
@@ -1041,7 +1085,7 @@ function GifDownloadMenu({
             Double ({sizeLabel(2)})
           </ActionList.Item>
           <ActionList.Item onSelect={() => { void handleDownload(4); }}>
-            Double again ({sizeLabel(4)})
+            Quadruple ({sizeLabel(4)})
           </ActionList.Item>
         </ActionList>
       </ActionMenu.Overlay>

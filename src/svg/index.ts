@@ -46,6 +46,7 @@ export { SvgEarthHero } from './SvgEarthHero';
 export { SvgFastA2ADonation } from './SvgFastA2ADonation';
 export { SvgRadar } from './SvgRadar';
 export { SvgNotebookArtifact } from './SvgNotebookArtifact';
+export { SvgOSAContributions } from './SvgOSAContributions';
 export { SvgDocumentArtifact } from './SvgDocumentArtifact';
 export { SvgCellArtifact } from './SvgCellArtifact';
 export { SvgLessonArtifact } from './SvgLessonArtifact';
