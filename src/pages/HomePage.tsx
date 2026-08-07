@@ -35,7 +35,7 @@ export function HomePage() {
         >
           <Text
             sx={{
-              color: 'accent.fg',
+              color: palette.accent,
               fontSize: 1,
               fontWeight: 600,
               letterSpacing: '0.08em',
@@ -52,12 +52,12 @@ export function HomePage() {
               lineHeight: 1.1,
               mb: 3,
               maxWidth: 880,
-              color: palette.secondary,
+              color: palette.accent,
             }}
           >
             The visual system behind
             <br />
-            Datalayer&rsquo;s AI &amp; data products.
+            Datalayer&rsquo;s AI &amp; data products
           </Heading>
           <Text as="p" sx={{ fontSize: 3, lineHeight: 1.55, maxWidth: 760, color: 'fg.muted', mb: 0 }}>
             One brand, one palette, one geometry &mdash; so every notebook,
