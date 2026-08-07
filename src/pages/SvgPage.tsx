@@ -568,7 +568,7 @@ const ARTIFACTS_SVG_NAMES = new Set([
   'SvgPublication',
 ]);
 const PIXELS_SVG_NAMES = new Set(['SvgPixel1', 'SvgPixel2']);
-const PICTOS_SVG_NAMES = new Set(['SvgSkubble', 'SvgEricCharles']);
+const PICTOS_SVG_NAMES = new Set(['SvgSkubble']);
 
 function isCaseSvg(name: string) {
   return CASES_SVG_NAMES.has(name);
