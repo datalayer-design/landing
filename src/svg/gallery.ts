@@ -43,6 +43,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgNotebookArtifact',
   'SvgDocumentArtifact',
   'SvgCellArtifact',
+  'SvgCellOutputshotPlaceholder',
   'SvgLessonArtifact',
   'SvgExerciseArtifact',
   'SvgAssignmentArtifact',

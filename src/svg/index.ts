@@ -52,6 +52,15 @@ export { SvgCellArtifact } from './SvgCellArtifact';
 export { SvgLessonArtifact } from './SvgLessonArtifact';
 export { SvgExerciseArtifact } from './SvgExerciseArtifact';
 export { SvgAssignmentArtifact } from './SvgAssignmentArtifact';
+export { SvgNotebookMock } from './SvgNotebookMock';
+export type { SvgNotebookMockProps } from './SvgNotebookMock';
+export {
+  SvgCellOutputshotPlaceholder,
+  buildCellOutputshotPlaceholderSvg,
+  cellOutputshotPlaceholderDataUri,
+  useCellOutputshotPlaceholderDataUri,
+} from './SvgCellOutputshotPlaceholder';
+export type { SvgCellOutputshotPlaceholderProps } from './SvgCellOutputshotPlaceholder';
 export { SvgDataset } from './SvgDataset';
 export { SvgJupyterMcp } from './SvgJupyterMcp';
 export { SvgLines } from './SvgLines';
