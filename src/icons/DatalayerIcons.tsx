@@ -55,6 +55,20 @@ const GRID_TEMPLATE = `minmax(200px, 1.6fr) repeat(${ICON_COLUMNS.length}, ${SWA
 const columnTitle = (key: string, fallback: string, isLight: boolean) =>
   key === 'inverse' ? (isLight ? 'On dark' : 'On light') : fallback;
 
+const columnSnippet = (key: string, isLight: boolean) => {
+  if (key === 'colored') {
+    return '<DatalayerIcon colored />';
+  }
+  if (key === 'mono') {
+    return '<DatalayerIcon />';
+  }
+  if (key === 'accent') {
+    return '<DatalayerIcon color={palette.flame} />';
+  }
+  const inverseMode = isLight ? 'dark' : 'light';
+  return `<DatalayerIcon colored colormode=\"${inverseMode}\" />`;
+};
+
 const Swatch = (props: {
   children: React.ReactNode;
   sx?: Record<string, unknown>;
@@ -246,7 +260,7 @@ const IconLine = (props: { name: string, icon: any }) => {
             '--datalayer-icon-fg': inversePalette.primary,
           }}
         >
-          <IconComponent colored size="large" colormoded={inversePreviewMode} />
+          <IconComponent colored size="large" colormode={inversePreviewMode} />
         </Swatch>
 
         {/* Downloads */}
@@ -514,6 +528,23 @@ const DatalayerIcons = () => {
                 </Text>
                 <Text sx={{ display: 'block', fontSize: 1, color: 'fg.muted' }}>
                   {col.hint}
+                </Text>
+                <Text
+                  as="code"
+                  sx={{
+                    display: 'block',
+                    mt: 2,
+                    px: 2,
+                    py: 1,
+                    fontFamily: 'mono',
+                    fontSize: 0,
+                    borderRadius: 2,
+                    border: '1px solid',
+                    borderColor: 'border.default',
+                    backgroundColor: 'canvas.subtle',
+                  }}
+                >
+                  {columnSnippet(col.key, palette.isLight)}
                 </Text>
               </Box>
             ))}
