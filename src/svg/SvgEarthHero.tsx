@@ -24,11 +24,11 @@ export function SvgEarthHero({
   const lo = p.isLight;
   // The disc carries the picture, so it is drawn nearer to full strength than
   // the scenery around it. Below this it reads as a haze rather than a planet.
-  const planetOpacity = lo ? 0.92 : 0.84;
+  const planetOpacity = lo ? 1 : 0.95;
   const seaFillOpacity = lo ? 0.9 : 0.78;
   const leafOpacity = lo ? 0.88 : 0.72;
   const gridOpacity = lo ? 0.1 : 0.07;
-  const glowOpacity = lo ? 0.28 : 0.16;
+  const glowOpacity = lo ? 0.36 : 0.24;
   const strokeMid = lo ? 0.34 : 0.2;
 
   /**
@@ -48,12 +48,18 @@ export function SvgEarthHero({
   const SEA_COAST =
     "M 0 325 C 30 312,60 338,100 321 C 135 305,175 337,220 325 " +
     "C 260 313,295 335,340 323 C 375 311,415 337,458 317 " +
-    "C 494 305,540 318,586 332";
+    "C 494 316,540 330,586 344";
+
+  /** The shore surface: beach and forest floor as one continuous line. */
+  const SHORE_TOP =
+    "M 440 350 C 505 342,565 334,625 326 C 690 317,758 309,826 303 " +
+    "C 890 298,950 300,1010 304 C 1140 308,1270 307,1400 306";
 
   const SEA_PATH =
-    "M 0 390 L 0 325 C 30 312,60 338,100 321 C 135 305,175 337,220 325 " +
+    "M 0 420 L 0 325 C 30 312,60 338,100 321 C 135 305,175 337,220 325 " +
     "C 260 313,295 335,340 323 C 375 311,415 337,458 317 " +
-    "C 494 305,540 318,586 332 C 636 347,672 364,690 390 Z";
+    "C 494 316,540 330,586 344 " +
+    "C 560 366,502 394,426 408 C 326 422,146 422,0 420 Z";
 
   return (
     <svg
@@ -132,16 +138,32 @@ export function SvgEarthHero({
           <stop offset="70%" stopColor={p.gold} stopOpacity={lo ? 0.6 : 0.4} />
           <stop offset="100%" stopColor={p.gold} stopOpacity="0" />
         </linearGradient>
-        {/* ── Left panel accent ─────────────────────────────────────── */}
-        <linearGradient id="eaLeftPanel" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor={p.spark} />
-          <stop offset="100%" stopColor={p.pop} />
-        </linearGradient>
 
-        {/* ── Right panel accent ────────────────────────────────────── */}
-        <linearGradient id="eaRightPanel" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor={p.flame} />
-          <stop offset="100%" stopColor={p.blaze} />
+        {/* The shore, as one surface: sand at the waterline on the left
+            running to the green of the forest floor on the right. `gold` and
+            `surge` are the palette's yellow and its sage, so this stays the
+            theme's own colours rather than two literals that would clash with
+            every other variant. */}
+        <linearGradient id="eaShore" x1="0" y1="0" x2="1" y2="0">
+          {/* Fades in from nothing on the left. Begun at full strength it cut
+              a vertical edge into the water where the shape starts. */}
+          <stop offset="0%" stopColor={p.gold} stopOpacity="0" />
+          <stop offset="9%" stopColor={p.gold} stopOpacity={lo ? 0.9 : 0.7} />
+          <stop
+            offset="34%"
+            stopColor={p.gold}
+            stopOpacity={lo ? 0.76 : 0.58}
+          />
+          <stop
+            offset="62%"
+            stopColor={p.surge}
+            stopOpacity={lo ? 0.6 : 0.46}
+          />
+          <stop
+            offset="100%"
+            stopColor={p.surge}
+            stopOpacity={lo ? 0.72 : 0.54}
+          />
         </linearGradient>
 
         {/* ── Grid texture ──────────────────────────────────────────── */}
@@ -376,17 +398,46 @@ export function SvgEarthHero({
           />
         </symbol>
 
-        {/* Dolphin, caught at the top of a leap: one crescent for the body, a
-            fin and a fluke. An arc rather than an outline, so it keeps the flat
-            cut-paper feel the trees are drawn with. */}
-        <symbol id="eaDolphin" viewBox="0 0 64 42">
+        {/* Dolphin. Read as a fish twice before this, so it is built around
+            the one feature that settles the question at this size: a long
+            slender beak, stepped off a rounded melon, rather than a snout
+            continuous with the head. The falcate dorsal and the horizontal
+            flukes do the rest — a fish has an upright tail and a straight fin. */}
+        <symbol id="eaDolphin" viewBox="0 0 130 60">
           <path
-            d="M7 38 C13 14, 35 3, 60 7 C43 12, 25 24, 17 40 Z"
+            d="M128 34 L106 37
+               C92 45, 68 52, 46 48
+               C32 45, 22 40, 10 36
+               C16 30, 24 23, 36 18
+               C56 10, 80 12, 96 20
+               C100 23, 103 26, 106 28 Z"
             fill={p.accent}
-            opacity="0.92"
+            opacity="0.96"
           />
-          <path d="M31 13 L40 4 L37 16 Z" fill={p.accent} opacity="0.72" />
-          <path d="M7 38 L0 31 L3 42 Z" fill={p.accent} opacity="0.8" />
+          {/* falcate dorsal, swept back toward the tail */}
+          <path
+            d="M62 12 C55 4, 45 0, 35 0 C47 4, 55 9, 58 16 Z"
+            fill={p.accent}
+            opacity="0.94"
+          />
+          {/* pectoral, swept back under the melon */}
+          <path
+            d="M84 42 C78 50, 70 56, 60 59 C72 52, 79 46, 81 41 Z"
+            fill={p.accent}
+            opacity="0.8"
+          />
+          {/* horizontal notched flukes */}
+          <path d="M11 35 L0 24 L6 35 L0 47 Z" fill={p.accent} opacity="0.92" />
+          <circle cx="99" cy="29" r="2.4" fill={p.bg} opacity="0.65" />
+          {/* the mouth line, which is what makes the beak read as a beak */}
+          <path
+            d="M126 34.5 C118 35.6, 111 36.3, 106 36.6"
+            fill="none"
+            stroke={p.bg}
+            strokeOpacity="0.45"
+            strokeWidth="1.5"
+            strokeLinecap="round"
+          />
         </symbol>
 
         {/* Whale: a back breaking the surface, a fluke behind it, and the
@@ -432,6 +483,50 @@ export function SvgEarthHero({
           <circle cx="48" cy="1" r="2.4" fill={p.glow} opacity="0.5" />
           <circle cx="62" cy="0" r="2.2" fill={p.glow} opacity="0.45" />
           <circle cx="76" cy="1" r="2.4" fill={p.glow} opacity="0.5" />
+        </symbol>
+
+        {/* Cloud, upper right — the sky was empty on that side. */}
+        <symbol id="eaCloud" viewBox="0 0 96 36">
+          <ellipse cx="27" cy="24" rx="21" ry="12" />
+          <ellipse cx="52" cy="17" rx="25" ry="15" />
+          <ellipse cx="74" cy="24" rx="18" ry="11" />
+          <rect x="8" y="21" width="80" height="13" rx="6.5" />
+        </symbol>
+
+        {/* Beach parasol: a scalloped dome on a pole, with two lighter
+            panels so it reads as fabric segments rather than a mushroom. */}
+        <symbol id="eaParasol" viewBox="0 0 60 74">
+          <rect
+            x="28"
+            y="24"
+            width="3.5"
+            height="50"
+            rx="1.5"
+            fill={p.flame}
+            opacity="0.72"
+          />
+          <path
+            d="M2 26 C4 10, 16 1, 30 1 C44 1, 56 10, 58 26 Z"
+            fill={p.blaze}
+            opacity="0.94"
+          />
+          <path
+            d="M30 1 C22 1, 14 6, 9 14 L2 26 L17 26 C19 16, 24 7, 30 1 Z"
+            fill={p.gold}
+            opacity="0.8"
+          />
+          <path
+            d="M30 1 C35 7, 38 16, 40 26 L48 26 C46 15, 40 6, 34 2 Z"
+            fill={p.gold}
+            opacity="0.8"
+          />
+          <path
+            d="M2 26 L58 26"
+            stroke={p.flame}
+            strokeOpacity="0.38"
+            strokeWidth="1.6"
+          />
+          <circle cx="30" cy="1.5" r="2.2" fill={p.flame} opacity="0.75" />
         </symbol>
 
         {/* Bear: heavy, round, low to the ground. */}
@@ -646,29 +741,12 @@ export function SvgEarthHero({
             LAYER 1 — Architectural horizontal rule bands (golden-ratio
             proportions, 3 bands: sky / equator / earth)
         ══════════════════════════════════════════════════════════ */}
-        {/* Top atmosphere strip */}
+        {/* Ground/earth plane. Starts where the land does — run the full
+            width it drew a rule across open water and sky. */}
         <rect
-          x="0"
-          y="0"
-          width="1400"
-          height="140"
-          fill={p.bg}
-          opacity={lo ? 0.18 : 0.1}
-        />
-        {/* Equator band */}
-        <rect
-          x="0"
-          y="140"
-          width="1400"
-          height="2"
-          fill={p.accent}
-          opacity={lo ? 0.22 : 0.12}
-        />
-        {/* Ground/earth plane */}
-        <rect
-          x="0"
+          x="920"
           y="310"
-          width="1400"
+          width="480"
           height="2"
           fill={p.accent}
           opacity={lo ? 0.22 : 0.12}
@@ -707,7 +785,7 @@ export function SvgEarthHero({
             rx="88"
             ry="70"
             fill="url(#eaLand)"
-            opacity={lo ? 0.58 : 0.44}
+            opacity={lo ? 0.72 : 0.58}
           />
           <ellipse
             cx="638"
@@ -715,7 +793,7 @@ export function SvgEarthHero({
             rx="54"
             ry="38"
             fill={p.pop}
-            opacity={lo ? 0.38 : 0.28}
+            opacity={lo ? 0.5 : 0.4}
           />
           {/* Secondary continent – right */}
           <ellipse
@@ -724,7 +802,7 @@ export function SvgEarthHero({
             rx="62"
             ry="52"
             fill={p.spark}
-            opacity={lo ? 0.38 : 0.28}
+            opacity={lo ? 0.5 : 0.4}
           />
           <ellipse
             cx="810"
@@ -741,7 +819,7 @@ export function SvgEarthHero({
             rx="28"
             ry="16"
             fill={p.spark}
-            opacity={lo ? 0.3 : 0.2}
+            opacity={lo ? 0.42 : 0.3}
           />
           <ellipse
             cx="726"
@@ -749,7 +827,7 @@ export function SvgEarthHero({
             rx="18"
             ry="10"
             fill={p.pop}
-            opacity={lo ? 0.24 : 0.14}
+            opacity={lo ? 0.34 : 0.22}
           />
           {/* Polar cap */}
           <ellipse
@@ -867,7 +945,7 @@ export function SvgEarthHero({
         ══════════════════════════════════════════════════════════ */}
 
         {/* Far halves — behind the disc, so drawn dimmer */}
-        <g opacity={lo ? 0.3 : 0.2}>
+        <g opacity={lo ? 0.42 : 0.3}>
           <ellipse
             cx="700"
             cy="210"
@@ -945,6 +1023,17 @@ export function SvgEarthHero({
             Architectural flat rectangle subdivided by wave-grid lines
         ══════════════════════════════════════════════════════════ */}
 
+        {/* A single cloud, kept small so it reads as sky rather than weather */}
+        <use
+          href="#eaCloud"
+          x="1104"
+          y="62"
+          width="118"
+          height="44"
+          fill={p.bgPanel}
+          opacity={lo ? 0.85 : 0.2}
+        />
+
         {/* ══════════════════════════════════════════════════════════
             LAYER 2c — LIFE IN THE WATER
 
@@ -959,10 +1048,11 @@ export function SvgEarthHero({
         <use
           href="#eaDolphin"
           x="206"
-          y="288"
-          width="58"
-          height="38"
-          opacity={lo ? 0.88 : 0.74}
+          y="272"
+          width="104"
+          height="48"
+          transform="rotate(-16 258 296)"
+          opacity={lo ? 0.95 : 0.82}
         />
 
         {/* Whale, surfaced and blowing, submerged to the shoulder */}
@@ -979,11 +1069,11 @@ export function SvgEarthHero({
         <path d={SEA_PATH} fill="url(#eaSea)" opacity={seaFillOpacity} />
         {/* Wave texture + shimmer clipped to organic shape */}
         <g clipPath="url(#eaSeaClip)">
-          <rect x="0" y="272" width="700" height="155" fill="url(#eaWaves)" />
+          <rect x="0" y="272" width="820" height="155" fill="url(#eaWaves)" />
           <rect
             x="0"
             y="272"
-            width="700"
+            width="820"
             height="155"
             fill="url(#eaSeaShimmer)"
           />
@@ -1024,58 +1114,43 @@ export function SvgEarthHero({
         {/* ══════════════════════════════════════════════════════════
             LAYER 3b — SANDY BEACH: transition sea → forest
         ══════════════════════════════════════════════════════════ */}
-
-        {/* Sand body — gentle undulating top, fading left and right */}
+        {/* The shore: one mass from the waterline to the far side of the
+            forest, so the beach and the land are no longer two panels meeting
+            at a seam. */}
+        <path d={`${SHORE_TOP} L 1400 420 L 440 420 Z`} fill="url(#eaShore)" />
+        {/* Wet-sand line along the top of it */}
         <path
-          d="M 460 390 L 460 318 C 510 308,560 328,620 314 C 680 300,740 320,800 312 C 855 304,895 318,950 310 L 950 390 Z"
-          fill="url(#eaSand)"
-          opacity={lo ? 0.82 : 0.62}
-        />
-        {/* Dry-sand lighter highlight. Filled with the same fading gradient as
-            the sand rather than a flat colour: a flat fill gave it a hard
-            vertical edge at x=500, right where the water is supposed to be
-            running out onto the beach. */}
-        <path
-          d="M 500 390 L 500 326 C 550 316,610 330,680 318 C 750 306,820 322,900 314 L 900 390 Z"
-          fill="url(#eaSand)"
-          opacity={lo ? 0.32 : 0.18}
-        />
-        {/* Shore edge — wet sand dark line */}
-        <path
-          d="M 460 318 C 510 308,560 328,620 314 C 680 300,740 320,800 312 C 855 304,895 318,950 310"
+          d={SHORE_TOP}
           fill="none"
           stroke={p.gold}
-          strokeOpacity={lo ? 0.7 : 0.45}
+          strokeOpacity={lo ? 0.6 : 0.4}
           strokeWidth="1.5"
           strokeLinecap="round"
+        />
+
+        {/* Two parasols on the dry sand, planted on the beach line and
+            sized so the one further along reads as further away. */}
+        <use
+          href="#eaParasol"
+          x="676"
+          y="312"
+          width="54"
+          height="62"
+          opacity={lo ? 1 : 0.88}
+        />
+        <use
+          href="#eaParasol"
+          x="778"
+          y="322"
+          width="46"
+          height="52"
+          opacity={lo ? 0.92 : 0.8}
         />
 
         {/* ══════════════════════════════════════════════════════════
             LAYER 4 — RIGHT PANEL: ARCHITECTURAL FOREST COMPOSITION
             Row-based tree grid, right side of canvas
         ══════════════════════════════════════════════════════════ */}
-
-        {/* Ground plane for forest */}
-        <rect
-          x="920"
-          y="310"
-          width="480"
-          height="110"
-          rx="3"
-          fill={p.spark}
-          opacity={lo ? 0.12 : 0.08}
-        />
-
-        {/* Accent bar at base */}
-        <rect
-          x="920"
-          y="406"
-          width="480"
-          height="4"
-          rx="1"
-          fill={p.pop}
-          opacity={lo ? 0.32 : 0.2}
-        />
 
         {/* Deep-background tree row (small, hazy) */}
         <g opacity={lo ? 0.44 : 0.32}>
@@ -1157,40 +1232,6 @@ export function SvgEarthHero({
             LAYER 5 — ACCENT PANELS (thin vertical bars, left edge)
             Bauhaus-style colour columns
         ══════════════════════════════════════════════════════════ */}
-        <rect
-          x="0"
-          y="0"
-          width="18"
-          height="420"
-          fill="url(#eaLeftPanel)"
-          opacity={lo ? 0.5 : 0.36}
-        />
-        <rect
-          x="18"
-          y="0"
-          width="6"
-          height="420"
-          fill={p.gold}
-          opacity={lo ? 0.24 : 0.14}
-        />
-
-        {/* Right edge bar */}
-        <rect
-          x="1376"
-          y="0"
-          width="18"
-          height="420"
-          fill="url(#eaRightPanel)"
-          opacity={lo ? 0.44 : 0.3}
-        />
-        <rect
-          x="1370"
-          y="0"
-          width="6"
-          height="420"
-          fill={p.flame}
-          opacity={lo ? 0.2 : 0.12}
-        />
 
         {/* ══════════════════════════════════════════════════════════
             LAYER 6 — BIRDS — two separate flocks:
@@ -1233,26 +1274,6 @@ export function SvgEarthHero({
             LAYER 7 — TYPOGRAPHIC / STRUCTURAL LINES
             Fine horizon construction lines across mid-composition
         ══════════════════════════════════════════════════════════ */}
-        <line
-          x1="72"
-          y1="210"
-          x2="504"
-          y2="210"
-          stroke={p.accent}
-          strokeWidth="0.75"
-          strokeOpacity={strokeMid}
-          strokeDasharray="4 10"
-        />
-        <line
-          x1="920"
-          y1="210"
-          x2="1392"
-          y2="210"
-          stroke={p.accent}
-          strokeWidth="0.75"
-          strokeOpacity={strokeMid}
-          strokeDasharray="4 10"
-        />
 
         {/* Cross-hairs on planet centre */}
         <line

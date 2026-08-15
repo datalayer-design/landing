@@ -24,7 +24,7 @@ export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } =
     return value / 1000;
   };
 
-  const squares: JSX.Element[] = [];
+  const squares: Array<{ key: string; x: number; y: number; opacity: number }> = [];
 
   for (let col = 0; col < columns; col += 1) {
     const x = startX + col * (cell + gap);
@@ -82,19 +82,16 @@ export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } =
 
       const y = baseY - row * (cell + gap);
       const opacity = 0.54 + Math.min(0.34, row * 0.025 + t * 0.05);
-      squares.push(
-        <rect
-          key={`sq1-${col}-${row}`}
-          x={x}
-          y={y}
-          width={cell}
-          height={cell}
-          fill={`url(#sq1-px-${id})`}
-          opacity={opacity}
-        />,
-      );
+      squares.push({ key: `sq1-${col}-${row}`, x, y, opacity });
     }
   }
+
+  const animatedRanks = new Map(
+    [...squares]
+      .sort((a, b) => a.y - b.y || a.x - b.x)
+      .slice(0, 20)
+      .map((square, rank) => [square.key, rank]),
+  );
 
   return (
     <svg
@@ -107,6 +104,23 @@ export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } =
     >
       <defs>
         <LightBoostFilter />
+        <style>{`
+          @keyframes sq1-fall-${id} {
+            0% {
+              transform: translateY(-800px);
+              animation-timing-function: cubic-bezier(0.32, 0, 0.78, 0.48);
+            }
+            78% {
+              transform: translateY(0);
+              animation-timing-function: ease-out;
+            }
+            85% { transform: translateY(-8px); }
+            92%, 100% { transform: translateY(0); }
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .sq1-falling-${id} { animation: none !important; }
+          }
+        `}</style>
         <linearGradient id={`sq1-bg-${id}`} x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor={p.bg} />
           <stop offset="100%" stopColor={p.bgAlt} />
@@ -123,7 +137,28 @@ export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } =
       <rect width="1024" height="768" fill={`url(#sq1-bg-${id})`} />
 
       <g filter={p.isLight ? 'url(#svgLightBoost)' : undefined}>
-        {squares}
+        {squares.map((square) => {
+          const rank = animatedRanks.get(square.key);
+          return (
+            <rect
+              key={square.key}
+              className={rank === undefined ? undefined : `sq1-falling-${id}`}
+              x={square.x}
+              y={square.y}
+              width={cell}
+              height={cell}
+              fill={`url(#sq1-px-${id})`}
+              opacity={square.opacity}
+              style={
+                rank === undefined
+                  ? undefined
+                  : {
+                      animation: `sq1-fall-${id} ${(3.2 + (rank % 5) * 0.12).toFixed(2)}s linear ${(rank * 0.07).toFixed(2)}s both`,
+                    }
+              }
+            />
+          );
+        })}
       </g>
     </svg>
   );
