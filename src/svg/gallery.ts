@@ -58,7 +58,9 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgTermsHero',
   'SvgNotFound',
   'SvgUnauthorized',
+  'SvgAI',
   'SvgAI2',
+  'SvgAI3',
   'SvgDI',
 ] as const;
 

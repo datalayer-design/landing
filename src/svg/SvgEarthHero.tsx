@@ -47,19 +47,20 @@ export function SvgEarthHero({
   /** The waterline alone, for the foam drawn along it. Traces `SEA_PATH`. */
   const SEA_COAST =
     "M 0 325 C 30 312,60 338,100 321 C 135 305,175 337,220 325 " +
-    "C 260 313,295 335,340 323 C 375 311,415 337,458 317 " +
-    "C 494 316,540 330,586 344";
+    "C 260 313,295 335,340 323 C 375 311,415 334,462 330 " +
+    "C 510 326,548 344,588 370";
 
   /** The shore surface: beach and forest floor as one continuous line. */
   const SHORE_TOP =
-    "M 440 350 C 505 342,565 334,625 326 C 690 317,758 309,826 303 " +
+    "M 432 332 C 500 328,562 324,625 318 C 690 311,758 305,826 300 " +
     "C 890 298,950 300,1010 304 C 1140 308,1270 307,1400 306";
 
   const SEA_PATH =
     "M 0 420 L 0 325 C 30 312,60 338,100 321 C 135 305,175 337,220 325 " +
-    "C 260 313,295 335,340 323 C 375 311,415 337,458 317 " +
-    "C 494 316,540 330,586 344 " +
-    "C 560 366,502 394,426 408 C 326 422,146 422,0 420 Z";
+    "C 260 313,295 335,340 323 C 375 311,415 334,462 330 " +
+    "C 510 326,548 344,588 370 " +
+    "C 608 378,608 393,590 401 " +
+    "C 546 417,466 423,392 419 C 262 414,130 419,0 420 Z";
 
   return (
     <svg
@@ -86,10 +87,12 @@ export function SvgEarthHero({
 
         {/* ── Planet fill ───────────────────────────────────────────── */}
         <radialGradient id="eaPlanet" cx="50%" cy="44%" r="50%">
-          <stop offset="0%" stopColor={p.glow} stopOpacity="0.95" />
-          <stop offset="38%" stopColor={p.primary} stopOpacity="0.88" />
-          <stop offset="72%" stopColor={p.surge} stopOpacity="0.80" />
-          <stop offset="100%" stopColor={p.bg} stopOpacity="0.10" />
+          <stop offset="0%" stopColor={p.gold} stopOpacity="1" />
+          <stop offset="18%" stopColor={p.spark} stopOpacity="0.98" />
+          <stop offset="40%" stopColor={p.glow} stopOpacity="0.95" />
+          <stop offset="62%" stopColor={p.primary} stopOpacity="0.92" />
+          <stop offset="84%" stopColor={p.surge} stopOpacity="0.85" />
+          <stop offset="100%" stopColor={p.bg} stopOpacity="0.12" />
         </radialGradient>
 
         {/* ── Planet land masses ────────────────────────────────────── */}
@@ -398,40 +401,38 @@ export function SvgEarthHero({
           />
         </symbol>
 
-        {/* Dolphin. Read as a fish twice before this, so it is built around
-            the one feature that settles the question at this size: a long
-            slender beak, stepped off a rounded melon, rather than a snout
-            continuous with the head. The falcate dorsal and the horizontal
-            flukes do the rest — a fish has an upright tail and a straight fin. */}
-        <symbol id="eaDolphin" viewBox="0 0 130 60">
+        {/* Dolphin, mid-leap. Straight-bodied it read as a fish however the
+            beak was drawn; a leaping dolphin is an arc. So the body is a
+            crescent — back strongly convex, belly concave, tail swinging up
+            behind — with the beak, the falcate dorsal and the horizontal
+            flukes set on it. */}
+        <symbol id="eaDolphin" viewBox="0 0 132 88">
           <path
-            d="M128 34 L106 37
-               C92 45, 68 52, 46 48
-               C32 45, 22 40, 10 36
-               C16 30, 24 23, 36 18
-               C56 10, 80 12, 96 20
-               C100 23, 103 26, 106 28 Z"
+            d="M126 26
+               C110 13, 84 9, 60 19
+               C38 28, 21 48, 12 72
+               C24 60, 36 50, 52 43
+               C76 33, 104 30, 126 26 Z"
             fill={p.accent}
             opacity="0.96"
           />
-          {/* falcate dorsal, swept back toward the tail */}
+          {/* falcate dorsal, on the outside of the arc */}
           <path
-            d="M62 12 C55 4, 45 0, 35 0 C47 4, 55 9, 58 16 Z"
+            d="M46 30 C37 21, 26 16, 15 15 C28 21, 37 28, 41 37 Z"
             fill={p.accent}
             opacity="0.94"
           />
-          {/* pectoral, swept back under the melon */}
+          {/* pectoral, on the inside of the arc */}
           <path
-            d="M84 42 C78 50, 70 56, 60 59 C72 52, 79 46, 81 41 Z"
+            d="M74 34 C71 45, 64 55, 54 62 C65 53, 71 44, 72 33 Z"
             fill={p.accent}
             opacity="0.8"
           />
-          {/* horizontal notched flukes */}
-          <path d="M11 35 L0 24 L6 35 L0 47 Z" fill={p.accent} opacity="0.92" />
-          <circle cx="99" cy="29" r="2.4" fill={p.bg} opacity="0.65" />
-          {/* the mouth line, which is what makes the beak read as a beak */}
+          {/* horizontal notched flukes, swung up behind */}
+          <path d="M14 70 L1 63 L9 72 L0 85 Z" fill={p.accent} opacity="0.92" />
+          <circle cx="106" cy="24" r="2.4" fill={p.bg} opacity="0.66" />
           <path
-            d="M126 34.5 C118 35.6, 111 36.3, 106 36.6"
+            d="M125 27 C118 27.6, 111 28.4, 105 29"
             fill="none"
             stroke={p.bg}
             strokeOpacity="0.45"
@@ -776,6 +777,17 @@ export function SvgEarthHero({
           opacity={planetOpacity}
         />
 
+        {/* A lit core. The disc is the focal point and was flattest exactly
+            at its middle. */}
+        <circle
+          cx="678"
+          cy="186"
+          r="88"
+          fill={p.gold}
+          opacity={lo ? 0.5 : 0.34}
+          filter="url(#eaSoftBlur)"
+        />
+
         {/* Land masses on planet surface — irregular blobs */}
         <g clipPath="url(#eaPlanetClip)">
           {/* Major continent – left */}
@@ -1030,8 +1042,19 @@ export function SvgEarthHero({
           y="62"
           width="118"
           height="44"
-          fill={p.bgPanel}
-          opacity={lo ? 0.85 : 0.2}
+          fill={lo ? p.bgPanel : p.glow}
+          opacity={lo ? 0.9 : 0.34}
+        />
+        {/* A second, smaller and flatter, so the pair does not read as one
+            shape repeated */}
+        <use
+          href="#eaCloud"
+          x="1236"
+          y="96"
+          width="86"
+          height="30"
+          fill={lo ? p.bgPanel : p.glow}
+          opacity={lo ? 0.72 : 0.24}
         />
 
         {/* ══════════════════════════════════════════════════════════
@@ -1047,19 +1070,19 @@ export function SvgEarthHero({
         {/* Dolphin, at the top of a leap, fluke still in the water */}
         <use
           href="#eaDolphin"
-          x="206"
-          y="272"
-          width="104"
-          height="48"
-          transform="rotate(-16 258 296)"
+          x="351"
+          y="292"
+          width="66"
+          height="44"
+          transform="rotate(-8 384 314)"
           opacity={lo ? 0.95 : 0.82}
         />
 
         {/* Whale, surfaced and blowing, submerged to the shoulder */}
         <use
           href="#eaWhale"
-          x="336"
-          y="276"
+          x="213"
+          y="290"
           width="96"
           height="52"
           opacity={lo ? 0.82 : 0.68}
@@ -1132,16 +1155,16 @@ export function SvgEarthHero({
             sized so the one further along reads as further away. */}
         <use
           href="#eaParasol"
-          x="676"
-          y="312"
+          x="536"
+          y="322"
           width="54"
           height="62"
           opacity={lo ? 1 : 0.88}
         />
         <use
           href="#eaParasol"
-          x="778"
-          y="322"
+          x="630"
+          y="330"
           width="46"
           height="52"
           opacity={lo ? 0.92 : 0.8}

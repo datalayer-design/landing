@@ -1,12 +1,10 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type RefObject, type SVGProps } from 'react';
+import { useEffect, useMemo, useRef, useState, type ElementType, type KeyboardEvent as ReactKeyboardEvent, type RefObject, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ActionList, ActionMenu, Box, Button, Heading, Text, TextInput } from '@primer/react';
 import { ArrowLeftIcon } from '@primer/octicons-react';
 import GIF from 'gif.js';
 import gifWorkerUrl from 'gif.js/dist/gif.worker.js?url';
 import {
-  AI,
-  AI2,
   DI,
   DatalayerLogo,
   DatalayerLogoText,
@@ -20,7 +18,7 @@ import * as SvgAssets from '../svg';
 import SpitfireAssetUrl from '../svg/images/datalayer-1.3.0-spitfire.svg';
 import BlackSnakeAssetUrl from '../svg/images/datalayer-1.2.0-black-snake.svg';
 
-type SvgComponent = (props?: any) => JSX.Element;
+type SvgComponent = ElementType;
 
 type SvgEntry = {
   name: string;
@@ -350,62 +348,6 @@ function SvgDatalayerTextLogoFirst(props?: SVGProps<SVGSVGElement>) {
   );
 }
 
-function SvgAI(props?: SVGProps<SVGSVGElement>) {
-  const { colorMode, theme } = useThemeStore();
-  const effectiveColorMode: 'light' | 'dark' =
-    colorMode === 'auto'
-      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      : colorMode;
-  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
-
-  return (
-    <Box
-      aria-label="AI mark"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
-      style={hostStyle}
-    >
-      <AI size={96} variant={theme} colorMode={effectiveColorMode} />
-    </Box>
-  );
-}
-
-function SvgAI2(props?: SVGProps<SVGSVGElement>) {
-  const { colorMode, theme } = useThemeStore();
-  const effectiveColorMode: 'light' | 'dark' =
-    colorMode === 'auto'
-      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-      : colorMode;
-  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
-
-  return (
-    <Box
-      aria-label="AI2 mark"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
-      style={hostStyle}
-    >
-      <AI2 size={96} variant={theme} colorMode={effectiveColorMode} />
-    </Box>
-  );
-}
-
 function SvgDI(props?: SVGProps<SVGSVGElement>) {
   const { colorMode, theme } = useThemeStore();
   const effectiveColorMode: 'light' | 'dark' =
@@ -466,9 +408,60 @@ function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
   );
 }
 
+function SvgAIMarkPreview({
+  ariaLabel,
+  Component,
+  props,
+}: {
+  ariaLabel: string;
+  Component: ElementType;
+  props?: SVGProps<SVGSVGElement>;
+}) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label={ariaLabel}
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <Component size={96} variant={theme} colorMode={effectiveColorMode} />
+    </Box>
+  );
+}
+
+function SvgAIPreview(props?: SVGProps<SVGSVGElement>) {
+  return <SvgAIMarkPreview ariaLabel="AI mark" Component={SvgAssets.SvgAI} props={props} />;
+}
+
+function SvgAI2Preview(props?: SVGProps<SVGSVGElement>) {
+  return <SvgAIMarkPreview ariaLabel="AI2 mark" Component={SvgAssets.SvgAI2} props={props} />;
+}
+
+function SvgAI3Preview(props?: SVGProps<SVGSVGElement>) {
+  return <SvgAIMarkPreview ariaLabel="AI3 mark" Component={SvgAssets.SvgAI3} props={props} />;
+}
+
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
   SvgBlackSnake: SvgBlackSnakeInline,
+  SvgAI: SvgAIPreview,
+  SvgAI2: SvgAI2Preview,
+  SvgAI3: SvgAI3Preview,
   SvgDI,
   SvgLinesLogo,
   SvgDatalayerLogo,
@@ -488,7 +481,10 @@ const DATALAYER_SVGS: SvgEntry[] = [
   ...ALL_SVG_ASSET_NAMES
     .map((name): SvgEntry | null => {
       const component = (SvgAssets as Record<string, unknown>)[name];
-      if (typeof component !== 'function' && !SVG_COMPONENT_OVERRIDES[name]) {
+      if (
+        component === null ||
+        (typeof component !== 'function' && typeof component !== 'object' && !SVG_COMPONENT_OVERRIDES[name])
+      ) {
         return null;
       }
       return {
@@ -528,14 +524,6 @@ const DATALAYER_SVGS: SvgEntry[] = [
     Component: SvgDatalayerTextAI,
   },
   {
-    name: 'SvgAI',
-    Component: SvgAI,
-  },
-  {
-    name: 'SvgAI2',
-    Component: SvgAI2,
-  },
-  {
     name: 'SvgLinesColored',
     Component: SvgLinesColored,
   },
@@ -546,6 +534,7 @@ const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
 const LOGO_SVG_NAMES = new Set([
   'SvgAI',
   'SvgAI2',
+  'SvgAI3',
   'SvgDI',
   'SvgDatalayerLogo',
   'SvgDatalayerTextLogo',
