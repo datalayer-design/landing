@@ -922,15 +922,31 @@ async function downloadAnimatedGif(
   };
 
   try {
+    // Build both animation timelines before recording, then rewind them
+    // together. SVG SMIL and CSS animations use separate timing APIs.
+    workingSvg.getBoundingClientRect();
     if (typeof workingSvg.pauseAnimations === 'function') {
       workingSvg.pauseAnimations();
     }
+    if (typeof workingSvg.setCurrentTime === 'function') {
+      workingSvg.setCurrentTime(0);
+    }
+    const webAnimations = workingSvg.getAnimations({ subtree: true });
+    webAnimations.forEach((animation) => {
+      animation.pause();
+      animation.currentTime = 0;
+    });
+    workingSvg.getBoundingClientRect();
 
     for (let i = 0; i < frameCount; i += 1) {
+      const frameTimeMs = i * frameDelay;
       if (typeof workingSvg.setCurrentTime === 'function') {
-        workingSvg.setCurrentTime((i * frameDelay) / 1000);
+        workingSvg.setCurrentTime(frameTimeMs / 1000);
       }
-      // Force the SMIL engine to update animated values before reading them.
+      webAnimations.forEach((animation) => {
+        animation.currentTime = frameTimeMs;
+      });
+      // Force both animation engines to update before reading the frame.
       workingSvg.getBoundingClientRect();
       const frameCanvas = await bakeAndRasterizeFrame();
       gif.addFrame(frameCanvas, { copy: true, delay: frameDelay });

@@ -24,6 +24,7 @@
     "watch:lib": "npm run copy:svg-assets && tsc -w"
   },
   "dependencies": {
+    "@datalayer/icons-all": "*",
     "@datalayer/icons-react": "^1.0.0",
     "@datalayer/primer-addons": "^1.0.12",
     "@primer/css": "^21.5.1",
