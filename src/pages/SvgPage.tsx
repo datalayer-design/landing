@@ -883,6 +883,11 @@ async function downloadAnimatedGif(
         if (computedOpacity && computedOpacity !== '1') {
           snapEl.setAttribute('opacity', computedOpacity);
         }
+
+        // The matrix above is the frozen CSS-animation state. Disable the
+        // cloned animation so it cannot restart at zero and override that
+        // matrix when the serialized frame is loaded into an image.
+        snapEl.style.animation = 'none';
       }
     }
 

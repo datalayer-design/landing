@@ -110,12 +110,12 @@ export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } =
               transform: translateY(-800px);
               animation-timing-function: cubic-bezier(0.32, 0, 0.78, 0.48);
             }
-            78% {
+            44% {
               transform: translateY(0);
               animation-timing-function: ease-out;
             }
-            85% { transform: translateY(-8px); }
-            92%, 100% { transform: translateY(0); }
+            47% { transform: translateY(-8px); }
+            50%, 100% { transform: translateY(0); }
           }
           @media (prefers-reduced-motion: reduce) {
             .sq1-falling-${id} { animation: none !important; }
@@ -153,7 +153,7 @@ export function SvgPixel1({ palette: paletteProp }: { palette?: ColorPalette } =
                 rank === undefined
                   ? undefined
                   : {
-                      animation: `sq1-fall-${id} ${(3.2 + (rank % 5) * 0.12).toFixed(2)}s linear ${(rank * 0.07).toFixed(2)}s both`,
+                      animation: `sq1-fall-${id} 9s linear ${(rank * 0.07).toFixed(2)}s infinite both`,
                     }
               }
             />

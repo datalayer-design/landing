@@ -102,7 +102,7 @@ export function SvgPixel2({ palette: paletteProp }: { palette?: ColorPalette } =
           rank === undefined
             ? undefined
             : {
-                animation: `sq2-fall-${id} ${(2.8 + (rank % 4) * 0.14).toFixed(2)}s linear ${(rank * 0.1).toFixed(2)}s both`,
+                animation: `sq2-fall-${id} 7s linear ${(rank * 0.1).toFixed(2)}s infinite both`,
               }
         }
       />
@@ -126,12 +126,12 @@ export function SvgPixel2({ palette: paletteProp }: { palette?: ColorPalette } =
               transform: translateY(-220px);
               animation-timing-function: cubic-bezier(0.32, 0, 0.78, 0.48);
             }
-            78% {
+            44% {
               transform: translateY(0);
               animation-timing-function: ease-out;
             }
-            85% { transform: translateY(-5px); }
-            92%, 100% { transform: translateY(0); }
+            47% { transform: translateY(-5px); }
+            50%, 100% { transform: translateY(0); }
           }
           @media (prefers-reduced-motion: reduce) {
             .sq2-falling-${id} { animation: none !important; }
