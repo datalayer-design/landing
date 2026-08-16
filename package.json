@@ -1,6 +1,6 @@
 {
   "name": "@datalayer/design",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
@@ -24,7 +24,7 @@
     "watch:lib": "npm run copy:svg-assets && tsc -w"
   },
   "dependencies": {
-    "@datalayer/icons-all": "*",
+    "@datalayer/icons-all": "^0.0.1",
     "@datalayer/icons-react": "^1.0.0",
     "@datalayer/primer-addons": "^1.0.12",
     "@primer/css": "^21.5.1",
