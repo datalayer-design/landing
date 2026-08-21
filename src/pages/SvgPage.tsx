@@ -25,9 +25,9 @@ type SvgEntry = {
   Component: SvgComponent;
 };
 
-type SvgSegment = 'All' | 'Heros' | 'Features' | 'Systems' | 'Artifacts' | 'Pixels' | 'Pictos' | 'Communication' | 'Cases' | 'Releases' | 'Logos';
+type SvgSegment = 'All' | 'Heros' | 'Features' | 'Systems' | 'Artifacts' | 'Pixels' | 'Pictos' | 'Communication' | 'Cases' | 'Releases' | 'Logos' | 'Partners';
 
-const SEGMENTS: SvgSegment[] = ['All', 'Artifacts', 'Cases', 'Communication', 'Features', 'Heros', 'Logos', 'Pictos', 'Pixels', 'Releases', 'Systems'];
+const SEGMENTS: SvgSegment[] = ['All', 'Artifacts', 'Cases', 'Communication', 'Features', 'Heros', 'Logos', 'Partners', 'Pictos', 'Pixels', 'Releases', 'Systems'];
 const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   (acc, segment) => {
     acc[segment.toLowerCase()] = segment;
@@ -38,6 +38,7 @@ const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
 SEGMENT_BY_SLUG.logo = 'Logos';
 SEGMENT_BY_SLUG.hero = 'Heros';
 SEGMENT_BY_SLUG.system = 'Systems';
+SEGMENT_BY_SLUG.partner = 'Partners';
 const slugForSegment = (segment: SvgSegment) => segment.toLowerCase();
 
 const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
@@ -559,6 +560,13 @@ const ARTIFACTS_SVG_NAMES = new Set([
 const PIXELS_SVG_NAMES = new Set(['SvgPixel1', 'SvgPixel2']);
 const PICTOS_SVG_NAMES = new Set(['SvgSkubble']);
 
+/*
+ * The marks of the companies Datalayer works WITH, which are not
+ * Datalayer's own: they carry someone else's name, and are kept apart so
+ * that the ones under Logos stay the house's.
+ */
+const PARTNERS_SVG_NAMES = new Set(['SvgDaytonaStartupGrid']);
+
 function isCaseSvg(name: string) {
   return CASES_SVG_NAMES.has(name);
 }
@@ -595,6 +603,10 @@ function isPictosSvg(name: string) {
   return PICTOS_SVG_NAMES.has(name);
 }
 
+function isPartnersSvg(name: string) {
+  return PARTNERS_SVG_NAMES.has(name);
+}
+
 function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'All') {
     return true;
@@ -626,6 +638,9 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'Cases') {
     return isCaseSvg(entry.name);
   }
+  if (segment === 'Partners') {
+    return isPartnersSvg(entry.name);
+  }
   return (
     !isHeroSvg(entry.name)
     && !isReleaseSvg(entry.name)
@@ -636,6 +651,7 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
     && !isPixelsSvg(entry.name)
     && !isPictosSvg(entry.name)
     && !isCaseSvg(entry.name)
+    && !isPartnersSvg(entry.name)
   );
 }
 
@@ -1263,6 +1279,7 @@ export function SvgPage() {
       Logos: textFiltered.filter((entry) => svgInSegment(entry, 'Logos')).length,
       Communication: textFiltered.filter((entry) => svgInSegment(entry, 'Communication')).length,
       Cases: textFiltered.filter((entry) => svgInSegment(entry, 'Cases')).length,
+      Partners: textFiltered.filter((entry) => svgInSegment(entry, 'Partners')).length,
     };
   }, [normalizedFilter]);
 

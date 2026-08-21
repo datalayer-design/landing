@@ -36,6 +36,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgIndividualsAndTeams',
   'SvgAgentsHero',
   'SvgEarthHero',
+  'SvgDaytonaStartupGrid',
   'SvgFastA2ADonation',
   'SvgJupyterMcp',
   'SvgOSAContributions',
