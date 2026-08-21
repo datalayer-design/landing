@@ -33,7 +33,26 @@ export function SvgDaytonaStartupGrid({ palette: paletteProp }: { palette?: Colo
       style={{ width: '100%', height: 'auto', display: 'block' }}
       role="img"
       aria-label="Daytona Startup Grid"
-    >      {/* The Daytona logotype: the mark, then the letters. */}
+    >
+      <defs>
+        <style>{`
+          @keyframes dsg-pulse {
+            0%, 55%, 100% { opacity: 1; }
+            20% { opacity: 0.25; }
+          }
+          .dsg-pulse {
+            animation: dsg-pulse 1.6s ease-in-out infinite;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .dsg-pulse {
+              animation: none !important;
+              opacity: 1;
+            }
+          }
+        `}</style>
+      </defs>
+
+      {/* The Daytona logotype: the mark, then the letters. */}
       <g>
         <rect width="18.0199" height="6.20729" x="34.6338" y="67.1746" fill={p.textLight} />
         <rect width="20.5942" height="6.2073" x="58.8301" y="45.4491" fill={p.textLight} />
@@ -115,31 +134,24 @@ export function SvgDaytonaStartupGrid({ palette: paletteProp }: { palette?: Colo
         />
       </g>
 
-      {/* The grid, which is what the programme is named for. */}
+      {/*
+        The grid, which is what the programme is named for — and the one
+        thing here that moves. The chevrons already point from the name
+        towards the words, so the pulse travels the same way: the six
+        columns dim and recover in turn, left to right. At rest, and for
+        anyone who asked not to be moved, every square is simply opaque,
+        which is the artwork exactly as it was drawn.
+      */}
       <g>
         <rect
           width="5.20381"
           height="5.20381"
-          x="286.796"
-          y="62.6112"
-          transform="rotate(90 286.796 62.6112)"
+          x="266.204"
+          y="47"
+          transform="rotate(90 266.204 47)"
           fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="271.408"
-          y="62.6112"
-          transform="rotate(90 271.408 62.6112)"
-          fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="281.592"
-          y="67.8157"
-          transform="rotate(90 281.592 67.8157)"
-          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${0 * 0.09}s` }}
         />
         <rect
           width="5.20381"
@@ -148,46 +160,8 @@ export function SvgDaytonaStartupGrid({ palette: paletteProp }: { palette?: Colo
           y="67.8157"
           transform="rotate(90 266.204 67.8157)"
           fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="292"
-          y="57.4062"
-          transform="rotate(90 292 57.4062)"
-          fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="276.611"
-          y="57.4062"
-          transform="rotate(90 276.611 57.4062)"
-          fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="281.592"
-          y="47"
-          transform="rotate(90 281.592 47)"
-          fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="266.204"
-          y="47"
-          transform="rotate(90 266.204 47)"
-          fill={p.primary}
-        />
-        <rect
-          width="5.20381"
-          height="5.20381"
-          x="286.796"
-          y="52.204"
-          transform="rotate(90 286.796 52.204)"
-          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${0 * 0.09}s` }}
         />
         <rect
           width="5.20381"
@@ -196,6 +170,78 @@ export function SvgDaytonaStartupGrid({ palette: paletteProp }: { palette?: Colo
           y="52.204"
           transform="rotate(90 271.408 52.204)"
           fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${1 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="271.408"
+          y="62.6112"
+          transform="rotate(90 271.408 62.6112)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${1 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="276.611"
+          y="57.4062"
+          transform="rotate(90 276.611 57.4062)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${2 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="281.592"
+          y="47"
+          transform="rotate(90 281.592 47)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${3 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="281.592"
+          y="67.8157"
+          transform="rotate(90 281.592 67.8157)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${3 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="286.796"
+          y="52.204"
+          transform="rotate(90 286.796 52.204)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${4 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="286.796"
+          y="62.6112"
+          transform="rotate(90 286.796 62.6112)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${4 * 0.09}s` }}
+        />
+        <rect
+          width="5.20381"
+          height="5.20381"
+          x="292"
+          y="57.4062"
+          transform="rotate(90 292 57.4062)"
+          fill={p.primary}
+          className="dsg-pulse"
+          style={{ animationDelay: `${5 * 0.09}s` }}
         />
       </g>
 

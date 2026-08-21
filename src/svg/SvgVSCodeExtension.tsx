@@ -83,18 +83,30 @@ export function SvgVSCodeExtension({ palette: paletteProp }: { palette?: ColorPa
       {/* Output visualization placeholder */}
       <rect x="284" y="230" width="380" height="50" rx="6" fill={p.secondary} opacity="0.06" />
       {/* Chart bars — vivid 7-color */}
-      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-        <rect
-          key={i}
-          x={304 + i * 44}
-          y={260 - (12 + Math.sin(i * 0.8) * 16)}
-          width="24"
-          height={12 + Math.sin(i * 0.8) * 16}
-          rx="2"
-          fill={[p.blaze, p.glow, p.surge, p.pop, p.spark, p.flame, p.gold][i % 7]}
-          opacity={0.35 + i * 0.06}
-        />
-      ))}
+      {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => {
+        /*
+         * The wave swung 16 either side of 12, so its troughs fell BELOW zero
+         * — and a negative height is not a short bar, it is an attribute the
+         * browser refuses, which dropped two of the eight and logged an error
+         * for each. The same wave, mapped onto a band that starts above zero:
+         * the tallest bar is the height it always was, and the shortest is
+         * still a bar. Computed once, since keeping the formula in both `y`
+         * and `height` is what let the two drift out of agreement.
+         */
+        const height = 6 + (Math.sin(i * 0.8) + 1) * 11;
+        return (
+          <rect
+            key={i}
+            x={304 + i * 44}
+            y={260 - height}
+            width="24"
+            height={height}
+            rx="2"
+            fill={[p.blaze, p.glow, p.surge, p.pop, p.spark, p.flame, p.gold][i % 7]}
+            opacity={0.35 + i * 0.06}
+          />
+        );
+      })}
 
       {/* Copilot AI sidebar glow — vivid */}
       <rect x="284" y="290" width="380" height="40" rx="6" fill={p.glow} opacity="0.06" />
