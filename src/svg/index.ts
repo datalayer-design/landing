@@ -79,3 +79,4 @@ export { SvgPrivacyHero } from './SvgPrivacyHero';
 export { SvgTermsHero } from './SvgTermsHero';
 export { SvgNotFound } from './SvgNotFound';
 export { SvgUnauthorized } from './SvgUnauthorized';
+export { SvgOg } from './SvgOg';

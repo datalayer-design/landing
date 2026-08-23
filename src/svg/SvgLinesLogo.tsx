@@ -7,10 +7,11 @@
 import { useId } from 'react';
 import {
   DatalayerLogoText,
+  getColorPalette,
   getLogoColors,
-  useColorPalette,
   useThemeStore,
 } from '@datalayer/primer-addons';
+import type { ColorMode, ThemeVariant } from '@datalayer/primer-addons';
 import { SvgLines } from './SvgLines';
 
 type SvgLinesLogoProps = {
@@ -20,6 +21,17 @@ type SvgLinesLogoProps = {
   primaryColor?: string;
   secondaryColor?: string;
   textColor?: string;
+  /**
+   * Draw it for this theme rather than for the reader's own.
+   *
+   * The wordmark's gradients are chosen by the VARIANT, so naming colours is
+   * not enough to move it off the stored theme — which is what a surface with
+   * a theme of its own needs, a deck being drawn in one, say. Absent means the
+   * theme store, which is what every other caller wants.
+   */
+  variant?: ThemeVariant;
+  /** The colour mode to go with `variant`. The store's when absent. */
+  colorMode?: ColorMode;
 };
 
 export function SvgLinesLogo({
@@ -29,14 +41,21 @@ export function SvgLinesLogo({
   primaryColor,
   secondaryColor,
   textColor,
+  variant,
+  colorMode: colorModeProp,
 }: SvgLinesLogoProps = {}) {
-  const palette = useColorPalette();
-  const { colorMode, theme } = useThemeStore();
+  const stored = useThemeStore();
+  const theme = variant ?? stored.theme;
+  const colorMode = colorModeProp ?? stored.colorMode;
   const effectiveColorMode: 'light' | 'dark' =
     colorMode === 'auto'
       ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
       : colorMode;
   const logoColors = getLogoColors(theme, effectiveColorMode);
+  // Derived from the theme IN FORCE rather than read from the store: the
+  // lines take a palette and would otherwise colour themselves from the
+  // reader's own theme while the wordmark beside them had moved.
+  const palette = getColorPalette(theme, effectiveColorMode);
   const themedPrimaryColor = primaryColor ?? logoColors.primary ?? palette.primary;
   const themedSecondaryColor = secondaryColor ?? logoColors.secondary ?? palette.secondary;
   const themedTextColor = textColor ?? logoColors.textColor ?? palette.secondary;
@@ -91,7 +110,12 @@ export function SvgLinesLogo({
         }
       `}</style>
       <div className={`${scopeClass}__lines`}>
-        <SvgLines height={linesHeight} inverse={inverse} colored={colored} />
+        <SvgLines
+          height={linesHeight}
+          inverse={inverse}
+          colored={colored}
+          palette={palette}
+        />
       </div>
       <DatalayerLogoText
         size={logoSize}
