@@ -35,11 +35,21 @@ import {
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-/* The wordmark's own aspect: a 161.672×25 viewBox when the mark leads. */
-const LOGO_ASPECT = 161.672 / 25;
+/* The wordmark's own viewBox when the mark leads: 161.672×25. */
+const LOGO_VIEWBOX_HEIGHT = 25;
 const LOGO_HEIGHT = 128;
-const LOGO_WIDTH = LOGO_HEIGHT * LOGO_ASPECT;
-const LOGO_X = (WIDTH - LOGO_WIDTH) / 2;
+const LOGO_SCALE = LOGO_HEIGHT / LOGO_VIEWBOX_HEIGHT;
+/*
+ * Mark-first parks the wordmark's intrinsic gutter at the RIGHT of the
+ * viewBox — the ink stops at 148.897 of the 161.672 units (measured off the
+ * rendered outlines; it mirrors the 12-unit trim the mark-last arrangement
+ * takes off its left). Centring the BOX would therefore hang the logo ~33px
+ * left of the tagline, so the ink is what gets centred here.
+ */
+const LOGO_INK_WIDTH_UNITS = 148.897;
+const LOGO_INK_WIDTH = LOGO_INK_WIDTH_UNITS * LOGO_SCALE;
+/* The ink starts at the viewBox origin, so its left edge IS the svg's x. */
+const LOGO_X = (WIDTH - LOGO_INK_WIDTH) / 2;
 const LOGO_Y = 196;
 
 const TAGLINE_BASELINE = 430;
