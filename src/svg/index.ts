@@ -80,3 +80,4 @@ export { SvgTermsHero } from './SvgTermsHero';
 export { SvgNotFound } from './SvgNotFound';
 export { SvgUnauthorized } from './SvgUnauthorized';
 export { SvgOg } from './SvgOg';
+export { SvgLightHouse } from './SvgLightHouse';

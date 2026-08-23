@@ -546,7 +546,7 @@ const LOGO_SVG_NAMES = new Set([
   'SvgLinesLogo',
 ]);
 const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgOSAContributions', 'SvgRadar']);
-const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero', 'SvgOg']);
+const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero', 'SvgOg', 'SvgLightHouse']);
 const ARTIFACTS_SVG_NAMES = new Set([
   'SvgNotebookArtifact',
   'SvgDocumentArtifact',
