@@ -64,6 +64,7 @@ export {
 export type { SvgCellOutputshotPlaceholderProps } from './SvgCellOutputshotPlaceholder';
 export { SvgDataset } from './SvgDataset';
 export { SvgJupyterMcp } from './SvgJupyterMcp';
+export { SvgJupyterMcp2 } from './SvgJupyterMcp2';
 export { SvgLines } from './SvgLines';
 export { SvgPublication } from './SvgPublication';
 export { SvgAI } from './SvgAI';

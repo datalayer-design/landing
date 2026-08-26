@@ -163,7 +163,7 @@ export function SvgJupyterMcp({ palette: paletteProp }: { palette?: ColorPalette
           fontSize="11"
           fontFamily="system-ui, -apple-system, sans-serif"
         >
-          Notebooks &amp; Kernels
+          Notebooks &amp; Sandboxes
         </text>
 
         {/* ── MCP logo (right) ─────────────────────────────────── */}

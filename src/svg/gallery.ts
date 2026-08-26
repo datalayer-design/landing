@@ -41,6 +41,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgDaytonaStartupGrid',
   'SvgFastA2ADonation',
   'SvgJupyterMcp',
+  'SvgJupyterMcp2',
   'SvgOSAContributions',
   'SvgRadar',
   'SvgNotebookArtifact',
