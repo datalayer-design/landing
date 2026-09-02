@@ -4,6 +4,7 @@
  * Datalayer License
  */
 
+import type { JSX } from 'react';
 import { Text } from '@primer/react';
 import { Box, useColorPalette } from '@datalayer/primer-addons';
 import { ZapIcon } from '@primer/octicons-react';

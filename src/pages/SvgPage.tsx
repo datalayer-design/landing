@@ -5,7 +5,6 @@ import { ArrowLeftIcon } from '@primer/octicons-react';
 import GIF from 'gif.js';
 import gifWorkerUrl from 'gif.js/dist/gif.worker.js?url';
 import {
-  DI,
   DatalayerLogo,
   DatalayerLogoText,
   DatalayerTextAI,
@@ -14,6 +13,7 @@ import {
   useThemeStore,
 } from '@datalayer/primer-addons';
 import { DATALAYER_SVG_GALLERY } from '../svg/gallery';
+import DI from '../svg/SvgDI';
 import * as SvgAssets from '../svg';
 import SpitfireAssetUrl from '../svg/images/datalayer-1.3.0-spitfire.svg';
 import BlackSnakeAssetUrl from '../svg/images/datalayer-1.2.0-black-snake.svg';

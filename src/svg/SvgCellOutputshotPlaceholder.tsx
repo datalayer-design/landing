@@ -4,6 +4,7 @@
  * Datalayer License
  */
 
+import type { JSX } from 'react';
 import { type ColorPalette, useColorPalette } from '@datalayer/primer-addons';
 
 /**
