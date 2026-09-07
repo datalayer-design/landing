@@ -548,6 +548,9 @@ const LOGO_SVG_NAMES = new Set([
 const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgJupyterMcp2', 'SvgOSAContributions', 'SvgRadar']);
 const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero', 'SvgOg', 'SvgLightHouse']);
 const ARTIFACTS_SVG_NAMES = new Set([
+  // The library is where the artifacts live, so its drawing belongs beside
+  // them rather than under Heros, which the `Hero` suffix would claim.
+  'SvgLibraryHero',
   'SvgNotebookArtifact',
   'SvgDocumentArtifact',
   'SvgCellArtifact',
@@ -572,7 +575,7 @@ function isCaseSvg(name: string) {
 }
 
 function isHeroSvg(name: string) {
-  return name.endsWith('Hero') && !isCaseSvg(name);
+  return name.endsWith('Hero') && !isCaseSvg(name) && !isArtifactsSvg(name);
 }
 
 function isReleaseSvg(name: string) {

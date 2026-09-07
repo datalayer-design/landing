@@ -44,6 +44,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgJupyterMcp2',
   'SvgOSAContributions',
   'SvgRadar',
+  'SvgLibraryHero',
   'SvgNotebookArtifact',
   'SvgDocumentArtifact',
   'SvgCellArtifact',
