@@ -87,7 +87,16 @@ const LINK_GEOM = LINKS.map(({ from, to, bend }) => {
 
 const NUM_TRAVELLERS = 18;
 
-export function SvgAgentsHomeHero({ palette: paletteProp }: { palette?: ColorPalette } = {}) {
+/**
+ * `labels` — a word for each of the seven nodes, in `AGENTS` order, for a
+ * page whose story names them differently: a benchmark run at the centre
+ * with agents working its tasks around it, rather than an orchestrator and
+ * its roles. A missing entry keeps the node's own label.
+ */
+export function SvgAgentsHomeHero({
+  palette: paletteProp,
+  labels,
+}: { palette?: ColorPalette; labels?: string[] } = {}) {
   const auto = useColorPalette();
   const p = paletteProp ?? auto;
 
@@ -400,7 +409,7 @@ export function SvgAgentsHomeHero({ palette: paletteProp }: { palette?: ColorPal
               fill={c} opacity={isCenter ? 0.55 : 0.45}
               fontSize={isCenter ? 9 : 7.5} fontFamily="monospace" textAnchor="middle" fontWeight={isCenter ? 'bold' : 'normal'}
             >
-              {agent.label}
+              {labels?.[i] ?? agent.label}
             </text>
           </g>
         );
