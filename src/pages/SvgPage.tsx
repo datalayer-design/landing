@@ -545,14 +545,12 @@ const LOGO_SVG_NAMES = new Set([
   'SvgLinesColored',
   'SvgLinesLogo',
 ]);
-const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgJupyterMcp2', 'SvgOSAContributions', 'SvgRadar']);
-const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero', 'SvgOg', 'SvgLightHouse']);
+const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgJupyterMcp2', 'SvgOSAContributions', 'SvgOg', 'SvgRadar']);
+const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero', 'SvgLightHouse']);
 const ARTIFACTS_SVG_NAMES = new Set([
-  // The library is where the artifacts live, so its drawing belongs beside
-  // them rather than under Heros, which the `Hero` suffix would claim.
-  'SvgLibraryHero',
   'SvgNotebookArtifact',
   'SvgDocumentArtifact',
+  'SvgDeckArtifact',
   'SvgCellArtifact',
   'SvgLessonArtifact',
   'SvgExerciseArtifact',

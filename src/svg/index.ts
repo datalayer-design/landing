@@ -48,6 +48,7 @@ export { SvgDaytonaStartupGrid } from './SvgDaytonaStartupGrid';
 export { SvgFastA2ADonation } from './SvgFastA2ADonation';
 export { SvgRadar } from './SvgRadar';
 export { SvgNotebookArtifact } from './SvgNotebookArtifact';
+export { SvgDeckArtifact } from './SvgDeckArtifact';
 export { SvgOSAContributions } from './SvgOSAContributions';
 export { SvgDocumentArtifact } from './SvgDocumentArtifact';
 export { SvgCellArtifact } from './SvgCellArtifact';
