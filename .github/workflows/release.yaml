@@ -1,0 +1,116 @@
+# Copyright (c) 2023-2026 Datalayer, Inc.
+# Distributed under the terms of the MIT License.
+
+# Publishes the release a tag names to npm, with no stored token: npm trusts
+# this workflow file (OIDC trusted publishing, through the `npm` environment,
+# with provenance). The tag must name package.json's version; a version
+# already published is skipped. See RELEASE.md.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      npm: ${{ steps.plan.outputs.npm }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Check the tag names the version the package carries
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF_NAME#v}"
+          version="$(node -p "require('./package.json').version")"
+          echo "tag=$tag @datalayer/design=$version"
+          test "$tag" = "$version"
+
+      - name: Find whether it is published yet
+        id: plan
+        run: |
+          set -euo pipefail
+          version="${GITHUB_REF_NAME#v}"
+          if npm view "@datalayer/design@$version" version >/dev/null 2>&1; then
+            echo "npm: @datalayer/design@$version is already published, skipping"
+            echo "npm=" >> "$GITHUB_OUTPUT"
+          else
+            echo "npm: @datalayer/design@$version will be published"
+            echo "npm=yes" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build and pack
+        if: steps.plan.outputs.npm != ''
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          npm run build:lib
+          mkdir -p dist-npm
+          npm pack --pack-destination dist-npm
+          ls -la dist-npm
+
+      - uses: actions/upload-artifact@v4
+        if: steps.plan.outputs.npm != ''
+        with:
+          name: npm
+          path: dist-npm/*.tgz
+
+  npm:
+    needs: build
+    if: needs.build.outputs.npm != ''
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+      # Trusted publishing needs npm 11.5.1 or later.
+      - run: npm install -g npm@^11.5.1 && npm --version
+      - uses: actions/download-artifact@v4
+        with:
+          name: npm
+          path: dist
+      - name: Publish
+        run: |
+          set -euo pipefail
+          for tarball in dist/*.tgz; do
+            # "./": npm reads a bare "dist/x.tgz" as the GitHub shorthand
+            # github:dist/x.tgz and refuses to fetch it (EALLOWGIT).
+            npm publish "./$tarball" --provenance --access public
+          done
+
+  release:
+    name: GitHub release
+    needs: [build, npm]
+    if: always() && needs.build.result == 'success' && needs.npm.result != 'failure'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Create the release with generated notes
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 && exit 0
+          gh release create "$GITHUB_REF_NAME" --title "Release $version" --generate-notes \
+            --notes "- [npm @datalayer/design](https://www.npmjs.com/package/@datalayer/design/v/$version)"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

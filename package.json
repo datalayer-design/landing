@@ -1,6 +1,9 @@
 {
   "name": "@datalayer/design",
-  "version": "1.0.3",
+  "version": "1.0.4",
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
