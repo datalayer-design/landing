@@ -208,7 +208,7 @@ export function HomePage() {
             >
               Datalayer Design
             </Text>
-            <Heading
+            <Text
               as="h1"
               sx={{
                 fontSize: [5, 6, 7],
@@ -222,7 +222,7 @@ export function HomePage() {
               The visual system behind
               <br />
               Datalayer&rsquo;s AI &amp; data products
-            </Heading>
+            </Text>
             <Text
               as="p"
               sx={{
@@ -371,9 +371,9 @@ export function HomePage() {
         >
           {PRINCIPLES.map((principle) => (
             <Card key={principle.title}>
-              <Heading as="h3" sx={{ fontSize: 3, mb: 2 }}>
+              <Text as="h3" sx={{ fontSize: 3, mb: 2 }}>
                 {principle.title}
-              </Heading>
+              </Text>
               <Text sx={{ color: "fg.muted", lineHeight: 1.65, fontSize: 1 }}>
                 {principle.body}
               </Text>
@@ -411,9 +411,9 @@ export function HomePage() {
                   ":hover .dla-go": { transform: "translateX(4px)" },
                 }}
               >
-                <Heading as="h3" sx={{ fontSize: 3, mb: 1 }}>
+                <Text as="h3" sx={{ fontSize: 3, mb: 1 }}>
                   {item.label}
-                </Heading>
+                </Text>
                 <Text sx={{ color: "fg.muted", fontSize: 1, mb: 3 }}>
                   {item.desc}
                 </Text>
