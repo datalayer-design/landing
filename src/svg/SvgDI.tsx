@@ -56,7 +56,7 @@ export const DI = forwardRef<SVGSVGElement, DIProps>(function DI(
       {...svgProps}
     >
       <path
-        d="M0.75 3.932L10.309 3.932L14.722 15L12.701 20.068L0.75 20.068ZM4.25 7.182L8.074 7.182L11.18 14.973L10.444 16.818L4.25 16.818Z"
+        d="M0.75 3.932H7.2A8.068 8.068 0 0 1 7.2 20.068H0.75ZM4.25 7.182H7.2A4.818 4.818 0 0 1 7.2 16.818H4.25Z"
         fill={resolvedSecondary}
         fillRule="evenodd"
         clipRule="evenodd"

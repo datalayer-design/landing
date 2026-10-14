@@ -14,6 +14,7 @@ import {
 } from '@datalayer/primer-addons';
 import { DATALAYER_SVG_GALLERY } from '../svg/gallery';
 import DI from '../svg/SvgDI';
+import { SvgDla as DlaMark } from '../svg/SvgDla';
 import * as SvgAssets from '../svg';
 import SpitfireAssetUrl from '../svg/images/datalayer-1.3.0-spitfire.svg';
 import BlackSnakeAssetUrl from '../svg/images/datalayer-1.2.0-black-snake.svg';
@@ -377,6 +378,34 @@ function SvgDI(props?: SVGProps<SVGSVGElement>) {
   );
 }
 
+function SvgDla(props?: SVGProps<SVGSVGElement>) {
+  const { colorMode, theme } = useThemeStore();
+  const effectiveColorMode: 'light' | 'dark' =
+    colorMode === 'auto'
+      ? (typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : colorMode;
+  const hostStyle = (props as { style?: Record<string, string | number> } | undefined)?.style;
+
+  return (
+    <Box
+      aria-label="Datalayer mark"
+      sx={{
+        width: '100%',
+        height: '100%',
+        minHeight: 120,
+        px: 2,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+      }}
+      style={hostStyle}
+    >
+      <DlaMark size={96} variant={theme} colorMode={effectiveColorMode} />
+    </Box>
+  );
+}
+
 function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
   const { colorMode, theme } = useThemeStore();
   const effectiveColorMode: 'light' | 'dark' =
@@ -459,6 +488,7 @@ const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgAI: SvgAIPreview,
   SvgAI3: SvgAI3Preview,
   SvgDI,
+  SvgDla,
   SvgLinesLogo,
   SvgDatalayerLogo,
   SvgDatalayerTextLogo,
@@ -531,6 +561,7 @@ const LOGO_SVG_NAMES = new Set([
   'SvgAI',
   'SvgAI3',
   'SvgDI',
+  'SvgDla',
   'SvgDatalayerLogo',
   'SvgDatalayerTextLogo',
   'SvgDatalayerTextLogoFirst',

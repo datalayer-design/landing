@@ -70,6 +70,8 @@ export { SvgJupyterMcp2 } from './SvgJupyterMcp2';
 export { SvgLines } from './SvgLines';
 export { SvgPublication } from './SvgPublication';
 export { SvgAI } from './SvgAI';
+export { SvgDla } from './SvgDla';
+export type { SvgDlaProps } from './SvgDla';
 export type { SvgAIProps } from './SvgAI';
 export { SvgAI3 } from './SvgAI3';
 export type { SvgAI3Props } from './SvgAI3';

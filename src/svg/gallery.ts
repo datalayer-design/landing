@@ -67,6 +67,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgAI',
   'SvgAI3',
   'SvgDI',
+  'SvgDla',
 ] as const;
 
 export type DatalayerSvgGalleryName = (typeof DATALAYER_SVG_GALLERY)[number];
