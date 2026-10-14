@@ -71,8 +71,6 @@ export { SvgLines } from './SvgLines';
 export { SvgPublication } from './SvgPublication';
 export { SvgAI } from './SvgAI';
 export type { SvgAIProps } from './SvgAI';
-export { SvgAI2 } from './SvgAI2';
-export type { SvgAI2Props } from './SvgAI2';
 export { SvgAI3 } from './SvgAI3';
 export type { SvgAI3Props } from './SvgAI3';
 export { SvgPixel1 } from './SvgPixel1';

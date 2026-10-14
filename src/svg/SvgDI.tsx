@@ -22,6 +22,11 @@ export interface DIProps extends Omit<SVGProps<SVGSVGElement>, 'ref'> {
  *
  * Uses the same public API and semantic color mapping as AI:
  * primaryColor styles the "I", secondaryColor styles the "D".
+ * Drawn on the AI mark's grid: the same slanted I, cap height and stroke
+ * weight. The D is five-sided: its right edge runs parallel to the I, on the
+ * A's right leg (same gap to the I), for two thirds of the height, then
+ * returns to the baseline at the mirrored angle. The counter is the outline
+ * inset by the stroke weight.
  */
 export const DI = forwardRef<SVGSVGElement, DIProps>(function DI(
   {
@@ -51,14 +56,14 @@ export const DI = forwardRef<SVGSVGElement, DIProps>(function DI(
       {...svgProps}
     >
       <path
-        d="M2 3.932H5V20.068075H2ZM3.5 3.932H6.5L12.933 20.068075H9.933ZM2 17.068075H11.4V20.068075H2Z"
+        d="M0.75 3.932L10.309 3.932L14.722 15L12.701 20.068L0.75 20.068ZM4.25 7.182L8.074 7.182L11.18 14.973L10.444 16.818L4.25 16.818Z"
         fill={resolvedSecondary}
-        strokeWidth={0.25}
+        fillRule="evenodd"
+        clipRule="evenodd"
       />
       <path
-        d="m10.788825 3.932 6.43325 16.136075h3.5279L14.316725 3.932H10.788825Z"
+        d="m13.788825 3.932 6.43325 16.136075h3.5279L17.316725 3.932H13.788825Z"
         fill={resolvedPrimary}
-        strokeWidth={0.25}
       />
     </svg>
   );

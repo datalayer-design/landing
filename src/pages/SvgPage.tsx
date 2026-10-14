@@ -449,10 +449,6 @@ function SvgAIPreview(props?: SVGProps<SVGSVGElement>) {
   return <SvgAIMarkPreview ariaLabel="AI mark" Component={SvgAssets.SvgAI} props={props} />;
 }
 
-function SvgAI2Preview(props?: SVGProps<SVGSVGElement>) {
-  return <SvgAIMarkPreview ariaLabel="AI2 mark" Component={SvgAssets.SvgAI2} props={props} />;
-}
-
 function SvgAI3Preview(props?: SVGProps<SVGSVGElement>) {
   return <SvgAIMarkPreview ariaLabel="AI3 mark" Component={SvgAssets.SvgAI3} props={props} />;
 }
@@ -461,7 +457,6 @@ const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
   SvgBlackSnake: SvgBlackSnakeInline,
   SvgAI: SvgAIPreview,
-  SvgAI2: SvgAI2Preview,
   SvgAI3: SvgAI3Preview,
   SvgDI,
   SvgLinesLogo,
@@ -534,7 +529,6 @@ const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake']);
 const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
 const LOGO_SVG_NAMES = new Set([
   'SvgAI',
-  'SvgAI2',
   'SvgAI3',
   'SvgDI',
   'SvgDatalayerLogo',
