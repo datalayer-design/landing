@@ -16,7 +16,7 @@
   },
   "homepage": "https://datalayer.design",
   "scripts": {
-    "build": "npm run clean && tsc && npm run copy:svg-assets && vite build",
+    "build": "tsc && npm run copy:svg-assets && vite build",
     "build:lib": "tsc && npm run copy:svg-assets",
     "clean": "rimraf lib build dist tsconfig.tsbuildinfo",
     "copy:svg-assets": "mkdir -p lib/svg/images && cp src/svg/images/*.svg lib/svg/images/",
