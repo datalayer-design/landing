@@ -487,12 +487,13 @@ function SvgAI3Preview(props?: SVGProps<SVGSVGElement>) {
   return <SvgAIMarkPreview ariaLabel="AI3 mark" Component={SvgAssets.SvgAI3} props={props} />;
 }
 
-/* The avatar in the gallery: idle and thinking side by side, in the theme's colours. */
+/* The avatar in the gallery: idle, thinking, and idle in the theme's colours. */
 function SvgAvatarOrbPreview() {
   return (
     <Box sx={{ width: '100%', minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
       <SvgAvatarOrb size={96} state="idle" title="Avatar, idle" />
       <SvgAvatarOrb size={96} state="thinking" title="Avatar, thinking" />
+      <SvgAvatarOrb size={96} state="idle" tone="theme" title="Avatar, idle, in the theme's colours" />
     </Box>
   );
 }

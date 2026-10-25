@@ -5,6 +5,6 @@
  */
 
 export { SvgAvatarOrb } from './SvgAvatarOrb';
-export type { AvatarOrbState } from './SvgAvatarOrb';
+export type { AvatarOrbState, AvatarOrbTone } from './SvgAvatarOrb';
 export { DATALAYER_AVATAR_GALLERY } from './gallery';
 export type { DatalayerAvatarGalleryName } from './gallery';
