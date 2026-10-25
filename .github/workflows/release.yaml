@@ -1,5 +1,5 @@
 # Copyright (c) 2023-2026 Datalayer, Inc.
-# Distributed under the terms of the MIT License.
+# Distributed under the terms of the CC BY 4.0 License.
 
 # Publishes the release a tag names to npm, with no stored token: npm trusts
 # this workflow file (OIDC trusted publishing, through the `npm` environment,

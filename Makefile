@@ -1,5 +1,5 @@
 # Copyright (c) Datalayer, Inc. https://datalayer.io
-# Distributed under the terms of the MIT License.
+# Distributed under the terms of the CC BY 4.0 License.
 
 SHELL=/bin/bash
 

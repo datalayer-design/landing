@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022-2026 Datalayer, Inc.
  *
- * MIT License
+ * CC BY 4.0 License
  */
 
 import { type ColorPalette, useColorPalette } from '@datalayer/primer-addons';

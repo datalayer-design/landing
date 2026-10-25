@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2021-2026 Datalayer, Inc.
  *
- * MIT License
+ * CC BY 4.0 License
  */
 
 import { useId } from 'react';
