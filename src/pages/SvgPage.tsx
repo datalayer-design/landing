@@ -487,15 +487,25 @@ function SvgAI3Preview(props?: SVGProps<SVGSVGElement>) {
   return <SvgAIMarkPreview ariaLabel="AI3 mark" Component={SvgAssets.SvgAI3} props={props} />;
 }
 
-/* The avatar in the gallery: idle, thinking, and idle in the theme's colours. */
-function SvgAvatarOrbPreview() {
+/* The avatar in the gallery: one card for each way it is drawn. */
+function AvatarOrbCard({ state, tone, title }: { state: 'idle' | 'thinking'; tone: 'iridescent' | 'theme'; title: string }) {
   return (
-    <Box sx={{ width: '100%', minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
-      <SvgAvatarOrb size={96} state="idle" title="Avatar, idle" />
-      <SvgAvatarOrb size={96} state="thinking" title="Avatar, thinking" />
-      <SvgAvatarOrb size={96} state="idle" tone="theme" title="Avatar, idle, in the theme's colours" />
+    <Box sx={{ width: '100%', minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <SvgAvatarOrb size={120} state={state} tone={tone} title={title} />
     </Box>
   );
+}
+
+function SvgAvatarOrbPreview() {
+  return <AvatarOrbCard state="idle" tone="iridescent" title="Avatar, idle" />;
+}
+
+function SvgAvatarOrbThinkingPreview() {
+  return <AvatarOrbCard state="thinking" tone="iridescent" title="Avatar, thinking" />;
+}
+
+function SvgAvatarOrbThemePreview() {
+  return <AvatarOrbCard state="idle" tone="theme" title="Avatar, in the theme's colours" />;
 }
 
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
@@ -574,6 +584,14 @@ const DATALAYER_SVGS: SvgEntry[] = [
     name: 'SvgAvatarOrb',
     Component: SvgAvatarOrbPreview,
   },
+  {
+    name: 'SvgAvatarOrbThinking',
+    Component: SvgAvatarOrbThinkingPreview,
+  },
+  {
+    name: 'SvgAvatarOrbTheme',
+    Component: SvgAvatarOrbThemePreview,
+  },
 ];
 
 const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake']);
@@ -607,7 +625,7 @@ const ARTIFACTS_SVG_NAMES = new Set([
 ]);
 const PIXELS_SVG_NAMES = new Set(['SvgPixel1', 'SvgPixel2']);
 /* An agent's avatar, drawn in the theme's colours (src/avatar). */
-const AVATAR_SVG_NAMES = new Set(['SvgAvatarOrb']);
+const AVATAR_SVG_NAMES = new Set(['SvgAvatarOrb', 'SvgAvatarOrbThinking', 'SvgAvatarOrbTheme']);
 const PICTOS_SVG_NAMES = new Set(['SvgSkubble']);
 
 /*
