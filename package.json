@@ -1,6 +1,7 @@
 {
   "name": "@datalayer/design",
   "version": "1.0.5",
+  "license": "Datalayer License",
   "publishConfig": {
     "access": "public"
   },

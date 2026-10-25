@@ -1,7 +1,7 @@
 <!--
   ~ Copyright (c) 2023-2026 Datalayer, Inc.
   ~
-  ~ MIT License
+  ~ Datalayer License
 -->
 
 # Making a release
