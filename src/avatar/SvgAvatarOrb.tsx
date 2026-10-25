@@ -4,7 +4,7 @@
  * CC BY 4.0 License
  */
 
-import { useId } from 'react';
+import { useId, useSyncExternalStore } from 'react';
 import { type ColorPalette, useColorPalette } from '@datalayer/primer-addons';
 
 /** What the avatar is doing: resting, or working on an answer. */
@@ -29,6 +29,20 @@ type SvgAvatarOrbProps = {
   /** Read by a screen reader; the avatar is decorative when absent. */
   title?: string;
 };
+
+const REDUCED_MOTION = '(prefers-reduced-motion: reduce)';
+
+/* Whether the reader asks for reduced motion, followed as it changes. */
+function subscribeReducedMotion(onChange: () => void) {
+  if (typeof window === 'undefined' || !window.matchMedia) return () => {};
+  const query = window.matchMedia(REDUCED_MOTION);
+  query.addEventListener('change', onChange);
+  return () => query.removeEventListener('change', onChange);
+}
+
+function prefersReducedMotion() {
+  return typeof window !== 'undefined' && !!window.matchMedia && window.matchMedia(REDUCED_MOTION).matches;
+}
 
 const IRIDESCENT = { a: '#1fd0ff', b: '#ff4fae', c: '#c4bdff' };
 
@@ -55,13 +69,14 @@ const BLOBS: Array<{ colour: 'a' | 'b' | 'c' | 'white'; cx: number; cy: number; 
  *
  * Pure SVG and SMIL, so it animates wherever an image does; ids are scoped
  * with `useId`, so several avatars share a page. A reduced-motion reader sees
- * it still (the `prefers-reduced-motion` rule below).
+ * it still: no animation is drawn at all (a CSS rule cannot stop SMIL).
  */
 export function SvgAvatarOrb({ size = 32, state = 'idle', tone = 'iridescent', palette, title }: SvgAvatarOrbProps) {
   const current = useColorPalette();
   const p = palette ?? current;
   const id = useId().replace(/[^a-zA-Z0-9_-]/g, '');
   const thinking = state === 'thinking';
+  const moving = !useSyncExternalStore(subscribeReducedMotion, prefersReducedMotion, () => false);
   const pace = thinking ? 1 / 3 : 1;
   const colours =
     tone === 'theme' ? { a: p.spark, b: p.blaze, c: p.surge, white: '#ffffff' } : { ...IRIDESCENT, white: '#ffffff' };
@@ -76,7 +91,6 @@ export function SvgAvatarOrb({ size = 32, state = 'idle', tone = 'iridescent', p
       style={{ overflow: 'visible' }}
     >
       {title ? <title>{title}</title> : null}
-      <style>{`@media (prefers-reduced-motion: reduce) { #${id} animate, #${id} animateTransform { display: none; } }`}</style>
       <defs>
         <clipPath id={`${id}-clip`}>
           <circle cx="50" cy="50" r="44" />
@@ -96,18 +110,22 @@ export function SvgAvatarOrb({ size = 32, state = 'idle', tone = 'iridescent', p
         </radialGradient>
       </defs>
       <g id={id}>
-        {/* While thinking, a ring leaves the sphere. */}
+        {/* While thinking, a ring leaves the sphere; held round it when still. */}
         {thinking ? (
-          <circle cx="50" cy="50" r="44" fill="none" stroke={colours.a} strokeWidth="3">
-            <animate attributeName="r" values="44;52" dur="1.4s" repeatCount="indefinite" />
-            <animate attributeName="opacity" values="0.7;0" dur="1.4s" repeatCount="indefinite" />
+          <circle cx="50" cy="50" r={moving ? 44 : 48} fill="none" stroke={colours.a} strokeWidth="3" opacity={moving ? 1 : 0.5}>
+            {moving ? (
+              <>
+                <animate attributeName="r" values="44;52" dur="1.4s" repeatCount="indefinite" />
+                <animate attributeName="opacity" values="0.7;0" dur="1.4s" repeatCount="indefinite" />
+              </>
+            ) : null}
           </circle>
         ) : null}
         <g clipPath={`url(#${id}-clip)`}>
           <g filter={`url(#${id}-blend)`}>
             {BLOBS.map((blob, index) => (
               <g key={index}>
-                {blob.dur ? (
+                {moving && blob.dur ? (
                   <animateTransform
                     attributeName="transform"
                     type="rotate"
@@ -127,7 +145,7 @@ export function SvgAvatarOrb({ size = 32, state = 'idle', tone = 'iridescent', p
                   opacity={blob.colour === 'white' ? 0.85 : 0.95}
                 >
                   {/* Each blob also swells and shrinks a little, out of step with the others. */}
-                  {blob.dur ? (
+                  {moving && blob.dur ? (
                     <animate
                       attributeName="rx"
                       values={`${blob.rx};${blob.rx * 1.25};${blob.rx}`}
