@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022-2026 Datalayer, Inc.
  *
- * Datalayer License
+ * MIT License
  */
 
 import type { JSX } from 'react';

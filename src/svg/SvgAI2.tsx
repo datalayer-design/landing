@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2023-2026 Datalayer, Inc.
  *
- * Datalayer License
+ * MIT License
  */
 
 import { forwardRef, type SVGProps } from 'react';
