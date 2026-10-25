@@ -12,7 +12,6 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { to: '/svg', label: 'SVG' },
   { to: '/icons', label: 'Icons' },
-  { to: '/avatar', label: 'Avatar' },
 ];
 
 export function SiteLayout() {

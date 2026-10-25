@@ -13,6 +13,7 @@ import {
   useThemeStore,
 } from '@datalayer/primer-addons';
 import { DATALAYER_SVG_GALLERY } from '../svg/gallery';
+import { SvgAvatarOrb } from '../avatar';
 import DI from '../svg/SvgDI';
 import { SvgDla as DlaMark } from '../svg/SvgDla';
 import * as SvgAssets from '../svg';
@@ -26,9 +27,9 @@ type SvgEntry = {
   Component: SvgComponent;
 };
 
-type SvgSegment = 'All' | 'Heros' | 'Features' | 'Systems' | 'Artifacts' | 'Pixels' | 'Pictos' | 'Communication' | 'Cases' | 'Releases' | 'Logos' | 'Partners';
+type SvgSegment = 'All' | 'Avatar' | 'Heros' | 'Features' | 'Systems' | 'Artifacts' | 'Pixels' | 'Pictos' | 'Communication' | 'Cases' | 'Releases' | 'Logos' | 'Partners';
 
-const SEGMENTS: SvgSegment[] = ['All', 'Artifacts', 'Cases', 'Communication', 'Features', 'Heros', 'Logos', 'Partners', 'Pictos', 'Pixels', 'Releases', 'Systems'];
+const SEGMENTS: SvgSegment[] = ['All', 'Artifacts', 'Avatar', 'Cases', 'Communication', 'Features', 'Heros', 'Logos', 'Partners', 'Pictos', 'Pixels', 'Releases', 'Systems'];
 const SEGMENT_BY_SLUG: Record<string, SvgSegment> = SEGMENTS.reduce(
   (acc, segment) => {
     acc[segment.toLowerCase()] = segment;
@@ -486,6 +487,16 @@ function SvgAI3Preview(props?: SVGProps<SVGSVGElement>) {
   return <SvgAIMarkPreview ariaLabel="AI3 mark" Component={SvgAssets.SvgAI3} props={props} />;
 }
 
+/* The avatar in the gallery: idle and thinking side by side, in the theme's colours. */
+function SvgAvatarOrbPreview() {
+  return (
+    <Box sx={{ width: '100%', minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 5 }}>
+      <SvgAvatarOrb size={96} state="idle" title="Avatar, idle" />
+      <SvgAvatarOrb size={96} state="thinking" title="Avatar, thinking" />
+    </Box>
+  );
+}
+
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
   SvgBlackSnake: SvgBlackSnakeInline,
@@ -558,6 +569,10 @@ const DATALAYER_SVGS: SvgEntry[] = [
     name: 'SvgLinesColored',
     Component: SvgLinesColored,
   },
+  {
+    name: 'SvgAvatarOrb',
+    Component: SvgAvatarOrbPreview,
+  },
 ];
 
 const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake']);
@@ -590,6 +605,8 @@ const ARTIFACTS_SVG_NAMES = new Set([
   'SvgPublication',
 ]);
 const PIXELS_SVG_NAMES = new Set(['SvgPixel1', 'SvgPixel2']);
+/* An agent's avatar, drawn in the theme's colours (src/avatar). */
+const AVATAR_SVG_NAMES = new Set(['SvgAvatarOrb']);
 const PICTOS_SVG_NAMES = new Set(['SvgSkubble']);
 
 /*
@@ -639,6 +656,10 @@ function isPartnersSvg(name: string) {
   return PARTNERS_SVG_NAMES.has(name);
 }
 
+function isAvatarSvg(name: string) {
+  return AVATAR_SVG_NAMES.has(name);
+}
+
 function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'All') {
     return true;
@@ -673,6 +694,9 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
   if (segment === 'Partners') {
     return isPartnersSvg(entry.name);
   }
+  if (segment === 'Avatar') {
+    return isAvatarSvg(entry.name);
+  }
   return (
     !isHeroSvg(entry.name)
     && !isReleaseSvg(entry.name)
@@ -684,6 +708,7 @@ function svgInSegment(entry: SvgEntry, segment: SvgSegment) {
     && !isPictosSvg(entry.name)
     && !isCaseSvg(entry.name)
     && !isPartnersSvg(entry.name)
+    && !isAvatarSvg(entry.name)
   );
 }
 
@@ -1312,6 +1337,7 @@ export function SvgPage() {
       Communication: textFiltered.filter((entry) => svgInSegment(entry, 'Communication')).length,
       Cases: textFiltered.filter((entry) => svgInSegment(entry, 'Cases')).length,
       Partners: textFiltered.filter((entry) => svgInSegment(entry, 'Partners')).length,
+      Avatar: textFiltered.filter((entry) => svgInSegment(entry, 'Avatar')).length,
     };
   }, [normalizedFilter]);
 
