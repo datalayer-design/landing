@@ -610,7 +610,7 @@ const LOGO_SVG_NAMES = new Set([
   'SvgLinesColored',
   'SvgLinesLogo',
 ]);
-const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgJupyterMcp2', 'SvgOSAContributions', 'SvgOg', 'SvgRadar']);
+const COMMUNICATION_SVG_NAMES = new Set(['SvgDiscord', 'SvgFastA2ADonation', 'SvgJupyterMcp', 'SvgJupyterMcp2', 'SvgOSAContributions', 'SvgOg', 'SvgOgStacked', 'SvgRadar']);
 const CASES_SVG_NAMES = new Set(['SvgEarthHero', 'SvgUsecasesHero', 'SvgLightHouse']);
 const ARTIFACTS_SVG_NAMES = new Set([
   'SvgNotebookArtifact',

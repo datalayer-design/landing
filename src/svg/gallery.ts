@@ -38,6 +38,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgLibraryHero',
   'SvgEarthHero',
   'SvgOg',
+  'SvgOgStacked',
   'SvgLightHouse',
   'SvgDaytonaStartupGrid',
   'SvgFastA2ADonation',
