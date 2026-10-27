@@ -13,7 +13,7 @@ import {
   useThemeStore,
 } from '@datalayer/primer-addons';
 import { DATALAYER_SVG_GALLERY } from '../svg/gallery';
-import { SvgAvatarOrb } from '../avatar';
+import { AVATAR_ORB_STATES, SvgAvatarOrb, type AvatarOrbState } from '../avatar';
 import DI from '../svg/SvgDI';
 import { SvgDla as DlaMark } from '../svg/SvgDla';
 import * as SvgAssets from '../svg';
@@ -487,25 +487,50 @@ function SvgAI3Preview(props?: SVGProps<SVGSVGElement>) {
   return <SvgAIMarkPreview ariaLabel="AI3 mark" Component={SvgAssets.SvgAI3} props={props} />;
 }
 
-/* The avatar in the gallery: one card for each way it is drawn. */
-function AvatarOrbCard({ state, tone, title }: { state: 'idle' | 'thinking'; tone: 'iridescent' | 'theme'; title: string }) {
+/*
+ * The avatar in the gallery: one card for each tone, and under it a button
+ * for each state the floating assistant acts out, to see each one. Pressing
+ * the state shown again plays it again (greeting and goodbye play once).
+ */
+function AvatarOrbCard({ tone, title }: { tone: 'iridescent' | 'theme'; title: string }) {
+  const [state, setState] = useState<AvatarOrbState>('idle');
+  const [replay, setReplay] = useState(0);
   return (
-    <Box sx={{ width: '100%', minHeight: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <SvgAvatarOrb size={120} state={state} tone={tone} title={title} />
+    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 2 }}>
+      <Box sx={{ minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <SvgAvatarOrb key={replay} size={120} state={state} tone={tone} title={`${title}, ${state}`} />
+      </Box>
+      <Box
+        role="group"
+        aria-label="Avatar state"
+        onClick={(event: { stopPropagation: () => void }) => event.stopPropagation()}
+        sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}
+      >
+        {AVATAR_ORB_STATES.map(one => (
+          <Button
+            key={one}
+            size="small"
+            variant={one === state ? 'primary' : 'default'}
+            aria-pressed={one === state}
+            onClick={() => {
+              setState(one);
+              setReplay(count => count + 1);
+            }}
+          >
+            {one}
+          </Button>
+        ))}
+      </Box>
     </Box>
   );
 }
 
 function SvgAvatarOrbPreview() {
-  return <AvatarOrbCard state="idle" tone="iridescent" title="Avatar, idle" />;
-}
-
-function SvgAvatarOrbThinkingPreview() {
-  return <AvatarOrbCard state="thinking" tone="iridescent" title="Avatar, thinking" />;
+  return <AvatarOrbCard tone="iridescent" title="Avatar" />;
 }
 
 function SvgAvatarOrbThemePreview() {
-  return <AvatarOrbCard state="idle" tone="theme" title="Avatar, in the theme's colours" />;
+  return <AvatarOrbCard tone="theme" title="Avatar, in the theme's colours" />;
 }
 
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
@@ -585,10 +610,6 @@ const DATALAYER_SVGS: SvgEntry[] = [
     Component: SvgAvatarOrbPreview,
   },
   {
-    name: 'SvgAvatarOrbThinking',
-    Component: SvgAvatarOrbThinkingPreview,
-  },
-  {
     name: 'SvgAvatarOrbTheme',
     Component: SvgAvatarOrbThemePreview,
   },
@@ -625,7 +646,7 @@ const ARTIFACTS_SVG_NAMES = new Set([
 ]);
 const PIXELS_SVG_NAMES = new Set(['SvgPixel1', 'SvgPixel2']);
 /* An agent's avatar, drawn in the theme's colours (src/avatar). */
-const AVATAR_SVG_NAMES = new Set(['SvgAvatarOrb', 'SvgAvatarOrbThinking', 'SvgAvatarOrbTheme']);
+const AVATAR_SVG_NAMES = new Set(['SvgAvatarOrb', 'SvgAvatarOrbTheme']);
 const PICTOS_SVG_NAMES = new Set(['SvgSkubble']);
 
 /*
