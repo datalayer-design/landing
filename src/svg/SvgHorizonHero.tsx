@@ -123,18 +123,18 @@ const LEGS: Leg[] = [
   },
   {
     ridge: 1,
-    curve: [{ x: 836, y: 216 }, { x: 826, y: 180 }, { x: 716, y: 200 }, { x: 700, y: 168 }],
+    curve: [{ x: 836, y: 216 }, { x: 826, y: 180 }, { x: 674, y: 200 }, { x: 658, y: 168 }],
     scale: [0.42, 0.22],
   },
   {
     ridge: 0,
-    curve: [{ x: 694, y: 186 }, { x: 700, y: 168 }, { x: 750, y: 170 }, { x: 742, y: 151 }],
+    curve: [{ x: 652, y: 186 }, { x: 658, y: 168 }, { x: 708, y: 170 }, { x: 700, y: 151 }],
     scale: [0.22, 0.06],
   },
 ];
 
 /** The end of the road, on the crest of the farthest ridge. */
-const VANISH: Point = { x: 742, y: crest(0, 742) };
+const VANISH: Point = { x: WIDTH / 2, y: crest(0, WIDTH / 2) };
 
 function bezier([a, b, c, d]: Leg['curve'], t: number): Point {
   const u = 1 - t;
