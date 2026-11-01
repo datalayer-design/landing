@@ -12,11 +12,9 @@ export function IconsPage() {
   return (
     <Suspense
       fallback={
-        <Box px={4} py={6}>
-          <Box maxWidth={1200} mx="auto" display="flex" alignItems="center" gap={3}>
-            <Spinner size="medium" />
-            <Text sx={{ color: "fg.muted" }}>Loading icon catalog...</Text>
-          </Box>
+        <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" gap={3} minHeight="70vh">
+          <Spinner size="large" />
+          <Text sx={{ color: "fg.muted", fontSize: 2 }}>Loading icon catalog...</Text>
         </Box>
       }
     >
