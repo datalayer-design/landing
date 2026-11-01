@@ -837,8 +837,8 @@ export function SvgHorizonHero({ palette: paletteProp }: { palette?: ColorPalett
       {/* Now, hours, days: all the scale this picture needs. */}
       <g fontFamily="ui-monospace, SFMono-Regular, Menlo, monospace" fill={p.textMuted} letterSpacing="1.2">
         <text x="740" y="352" fontSize="12">now</text>
-        <text x="858" y="232" fontSize="10">hours</text>
-        <text x="800" y="170" fontSize="8.5">days</text>
+        <text x="832" y="232" fontSize="10">hours</text>
+        <text x="714" y="172" fontSize="8.5">days</text>
       </g>
 
       {/* The teams last: a third of the road apart, and never anywhere else. */}
