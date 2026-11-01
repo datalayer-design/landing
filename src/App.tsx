@@ -7,15 +7,15 @@ import { IconsPage } from './pages/IconsPage';
 import { SvgPage } from './pages/SvgPage';
 
 export function App() {
-  // Apply default theme/colormode (matrix + light) when no persisted
+  // Apply default theme/colormode (metal + dark) when no persisted
   // value exists in localStorage. The store persists under 'datalayer-theme'.
   useEffect(() => {
     if (typeof window === 'undefined') return;
     const persisted = window.localStorage.getItem('datalayer-theme');
     if (persisted) return;
     const { setTheme, setColorMode } = useThemeStore.getState();
-    setTheme('matrix' as Parameters<typeof setTheme>[0]);
-    setColorMode('light');
+    setTheme('metal' as Parameters<typeof setTheme>[0]);
+    setColorMode('dark');
   }, []);
 
   return (
