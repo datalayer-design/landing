@@ -42,6 +42,7 @@ export { SvgLinesLogo } from './SvgLinesLogo';
 export { SvgOrganizationsAtScale } from './SvgOrganizationsAtScale';
 export { SvgIndividualsAndTeams } from './SvgIndividualsAndTeams';
 export { SvgAgentsHero } from './SvgAgentsHero';
+export { SvgHorizonHero } from './SvgHorizonHero';
 export { SvgLibraryHero } from './SvgLibraryHero';
 export { SvgEarthHero } from './SvgEarthHero';
 export { SvgDaytonaStartupGrid } from './SvgDaytonaStartupGrid';
