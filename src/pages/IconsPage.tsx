@@ -1,5 +1,6 @@
 import { Suspense, lazy } from "react";
-import { Box, Spinner, Text } from "@primer/react";
+import { Spinner, Text } from "@primer/react";
+import { Box } from "@datalayer/primer-addons";
 
 const DatalayerIcons = lazy(() =>
   import("@datalayer/icons-all").then((module) => ({
@@ -11,16 +12,8 @@ export function IconsPage() {
   return (
     <Suspense
       fallback={
-        <Box sx={{ px: 4, py: 6 }}>
-          <Box
-            sx={{
-              maxWidth: 1200,
-              mx: "auto",
-              display: "flex",
-              alignItems: "center",
-              gap: 3,
-            }}
-          >
+        <Box px={4} py={6}>
+          <Box maxWidth={1200} mx="auto" display="flex" alignItems="center" gap={3}>
             <Spinner size="medium" />
             <Text sx={{ color: "fg.muted" }}>Loading icon catalog...</Text>
           </Box>

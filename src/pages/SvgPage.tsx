@@ -1,10 +1,13 @@
 import { useEffect, useMemo, useRef, useState, type ElementType, type KeyboardEvent as ReactKeyboardEvent, type RefObject, type SVGProps } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ActionList, ActionMenu, Box, Button, Heading, Text, TextInput } from '@primer/react';
+import { ActionList, ActionMenu, Button, Heading, Text, TextInput } from '@primer/react';
 import { ArrowLeftIcon } from '@primer/octicons-react';
 import GIF from 'gif.js';
 import gifWorkerUrl from 'gif.js/dist/gif.worker.js?url';
 import {
+  Box,
+  type BoxProps,
+  Card,
   DatalayerLogo,
   DatalayerLogoText,
   DatalayerTextAI,
@@ -43,7 +46,22 @@ SEGMENT_BY_SLUG.system = 'Systems';
 SEGMENT_BY_SLUG.partner = 'Partners';
 const slugForSegment = (segment: SvgSegment) => segment.toLowerCase();
 
+/** A name too long for the row of tabs; the tab keeps the full one as its title. */
+const SEGMENT_SHORT_LABELS: Partial<Record<SvgSegment, string>> = { Communication: 'Comms' };
+
 const BaseSvgLinesLogo = SvgAssets.SvgLinesLogo as SvgComponent;
+
+/** What holds a logo in the gallery: centred, with room around it. */
+const LOGO_HOST: BoxProps = {
+  width: '100%',
+  height: '100%',
+  minHeight: 120,
+  px: 2,
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  overflow: 'hidden',
+};
 
 function SvgSpitfireInline() {
   const p = useColorPalette();
@@ -103,12 +121,10 @@ function SvgSpitfireInline() {
   return (
     <Box
       aria-label="Spitfire aircraft"
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'block',
-        overflow: 'hidden',
-      }}
+      width="100%"
+      height="100%"
+      display="block"
+      overflow="hidden"
       dangerouslySetInnerHTML={{ __html: svgMarkup }}
     />
   );
@@ -172,12 +188,10 @@ function SvgBlackSnakeInline() {
   return (
     <Box
       aria-label="Black snake"
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'block',
-        overflow: 'hidden',
-      }}
+      width="100%"
+      height="100%"
+      display="block"
+      overflow="hidden"
       dangerouslySetInnerHTML={{ __html: svgMarkup }}
     />
   );
@@ -195,16 +209,7 @@ function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Lines logo"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <BaseSvgLinesLogo
@@ -224,16 +229,7 @@ function SvgLinesColored(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Colored lines"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <SvgAssets.SvgLines colored width="100%" height={44} />
@@ -253,16 +249,7 @@ function SvgDatalayerLogo(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Datalayer logo"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <DatalayerLogo
@@ -290,16 +277,7 @@ function SvgDatalayerTextLogo(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Datalayer text logo"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <DatalayerLogoText
@@ -326,16 +304,7 @@ function SvgDatalayerTextLogoFirst(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Datalayer text logo first"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <DatalayerLogoText
@@ -362,16 +331,7 @@ function SvgDI(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="DI mark"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <DI size={96} variant={theme} colorMode={effectiveColorMode} />
@@ -390,16 +350,7 @@ function SvgDla(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Datalayer mark"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <DlaMark size={96} variant={theme} colorMode={effectiveColorMode} />
@@ -418,16 +369,7 @@ function SvgDatalayerTextAI(props?: SVGProps<SVGSVGElement>) {
   return (
     <Box
       aria-label="Datalayer text AI"
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <DatalayerTextAI
@@ -458,16 +400,7 @@ function SvgAIMarkPreview({
   return (
     <Box
       aria-label={ariaLabel}
-      sx={{
-        width: '100%',
-        height: '100%',
-        minHeight: 120,
-        px: 2,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        overflow: 'hidden',
-      }}
+      {...LOGO_HOST}
       style={hostStyle}
     >
       <Component size={96} variant={theme} colorMode={effectiveColorMode} />
@@ -496,15 +429,18 @@ function AvatarOrbCard({ tone, title }: { tone: 'iridescent' | 'theme'; title: s
   const [state, setState] = useState<AvatarOrbState>('idle');
   const [replay, setReplay] = useState(0);
   return (
-    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, py: 2 }}>
-      <Box sx={{ minHeight: 150, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <Box width="100%" display="flex" flexDirection="column" alignItems="center" gap={2} py={2}>
+      <Box minHeight={150} display="flex" alignItems="center" justifyContent="center">
         <SvgAvatarOrb key={replay} size={120} state={state} tone={tone} title={`${title}, ${state}`} />
       </Box>
       <Box
         role="group"
         aria-label="Avatar state"
         onClick={(event: { stopPropagation: () => void }) => event.stopPropagation()}
-        sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}
+        display="flex"
+        flexWrap="wrap"
+        gap={1}
+        justifyContent="center"
       >
         {AVATAR_ORB_STATES.map(one => (
           <Button
@@ -767,14 +703,14 @@ function SegmentControl({
     <Box
       role="tablist"
       aria-label="SVG segment filter"
-      sx={{
-        display: 'inline-flex',
-        border: '1px solid',
-        borderColor: 'border.default',
-        borderRadius: 2,
-        overflow: 'hidden',
-        bg: 'canvas.default',
-      }}
+      display="inline-flex"
+      flexWrap="wrap"
+      maxWidth="100%"
+      border="1px solid"
+      borderColor="border.default"
+      borderRadius="medium"
+      overflow="hidden"
+      bg="canvas.default"
     >
       {segments.map((segment, index) => {
         const active = value === segment;
@@ -782,9 +718,13 @@ function SegmentControl({
           <Button
             key={segment}
             role="tab"
+            size="small"
             aria-selected={active}
+            aria-label={`${segment}, ${counts[segment]}`}
+            title={segment}
             onClick={() => onChange(segment)}
             sx={{
+              paddingInline: '6px',
               border: 'none',
               borderRadius: 0,
               borderLeft: index === 0 ? 'none' : '1px solid',
@@ -797,7 +737,7 @@ function SegmentControl({
               },
             }}
           >
-            {segment} ({counts[segment]})
+            {SEGMENT_SHORT_LABELS[segment] ?? segment} <span style={{ opacity: 0.7 }}>{counts[segment]}</span>
           </Button>
         );
       })}
@@ -1222,9 +1162,9 @@ function SvgCard({ name, Component }: SvgEntry) {
   const openDetail = () => navigate(`/svg/${name}`);
 
   return (
-    <Box sx={{ border: '1px solid', borderColor: 'border.default', borderRadius: 2, p: 3, bg: 'canvas.default' }}>
+    <Card border p={3}>
       <Text sx={{ fontWeight: 600, display: 'block', mb: 2 }}>{name}</Text>
-      <Box
+      <Card
         ref={ref}
         role="button"
         tabIndex={0}
@@ -1236,34 +1176,24 @@ function SvgCard({ name, Component }: SvgEntry) {
             openDetail();
           }
         }}
-        sx={{
-          p: 2,
-          border: '1px dashed',
-          borderColor: 'border.default',
-          bg: 'canvas.subtle',
-          borderRadius: 2,
-          minHeight: 160,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          mb: 2,
-          overflow: 'hidden',
-          position: 'relative',
-          isolation: 'isolate',
-          cursor: 'pointer',
-          ':hover': {
-            borderColor: 'accent.fg',
-          },
-          ':focus-visible': {
-            outline: '2px solid',
-            outlineColor: 'accent.fg',
-            outlineOffset: '2px',
-          },
-        }}
+        variant="subtle"
+        dashed
+        interactive
+        shadow="none"
+        rounded="small"
+        p={2}
+        minHeight={160}
+        flexDirection="row"
+        alignItems="center"
+        justifyContent="center"
+        mb={2}
+        overflow="hidden"
+        position="relative"
+        isolation="isolate"
       >
         <Component style={{ width: '100%', height: '100%' }} />
-      </Box>
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+      </Card>
+      <Box display="flex" gap={2} flexWrap="wrap">
         <Button onClick={openDetail}>View</Button>
         <RasterDownloadMenu label="Download PNG" format="png" fileName={name} containerRef={ref} />
         <RasterDownloadMenu label="Download JPG" format="jpg" fileName={name} containerRef={ref} />
@@ -1276,7 +1206,7 @@ function SvgCard({ name, Component }: SvgEntry) {
           Download SVG
         </Button>
       </Box>
-    </Box>
+    </Card>
   );
 }
 
@@ -1289,8 +1219,8 @@ function SvgDetailPage() {
 
   if (!entry) {
     return (
-      <Box sx={{ px: 4, py: 5 }}>
-        <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
+      <Box px={4} py={5}>
+        <Box maxWidth={1200} mx="auto">
           <Text>SVG not found.</Text>
         </Box>
       </Box>
@@ -1300,9 +1230,9 @@ function SvgDetailPage() {
   const Component = entry.Component;
 
   return (
-    <Box sx={{ px: 4, py: 5 }}>
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+    <Box px={4} py={5}>
+      <Box maxWidth={1200} mx="auto">
+      <Box display="flex" gap={2} flexWrap="wrap">
         <Button
           variant="invisible"
           leadingVisual={ArrowLeftIcon}
@@ -1322,12 +1252,20 @@ function SvgDetailPage() {
         </Button>
       </Box>
       <Heading as="h2" sx={{ mt: 3, mb: 3 }}>{entry.name}</Heading>
-      <Box
+      <Card
         ref={ref}
-        sx={{ p: 4, border: '1px solid', borderColor: 'border.default', borderRadius: 2, display: 'flex', justifyContent: 'center', minHeight: 280, overflow: 'hidden', position: 'relative', isolation: 'isolate' }}
+        border
+        rounded="small"
+        p={4}
+        flexDirection="row"
+        justifyContent="center"
+        minHeight={280}
+        overflow="hidden"
+        position="relative"
+        isolation="isolate"
       >
         <Component style={{ width: '100%', maxWidth: 900 }} />
-      </Box>
+      </Card>
       </Box>
     </Box>
   );
@@ -1393,14 +1331,14 @@ export function SvgPage() {
   }
 
   return (
-    <Box sx={{ px: 4, py: 5 }}>
-      <Box sx={{ maxWidth: 1200, mx: 'auto' }}>
-      <Box sx={{ border: '1px solid', borderColor: 'border.default', borderRadius: 2, bg: 'canvas.subtle', p: [3, 4], mb: 4 }}>
+    <Box px={4} py={5}>
+      <Box maxWidth={1200} mx="auto">
+      <Card variant="subtle" border shadow="none" p={[3, 4]} mb={4}>
         <Heading as="h2" sx={{ fontSize: 4, mb: 2 }}>SVG Gallery</Heading>
         <Text sx={{ color: 'fg.muted' }}>
           Gallery generated from local design SVG exports.
         </Text>
-        <Box sx={{ mt: 3, maxWidth: 420 }}>
+        <Box mt={3} maxWidth={420}>
           <TextInput
             block
             value={filter}
@@ -1409,15 +1347,15 @@ export function SvgPage() {
             aria-label="Filter SVGs by name"
           />
         </Box>
-        <Box sx={{ mt: 3, display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap' }}>
+        <Box mt={3} display="flex" alignItems="center" gap={2} flexWrap="wrap">
           <SegmentControl value={segment} onChange={setSegment} counts={segmentCounts} />
         </Box>
-      </Box>
-      <Box sx={{ display: 'grid', gridTemplateColumns: ['1fr', '1fr', '1fr 1fr'], gap: 3 }}>
+      </Card>
+      <Box display="grid" gridTemplateColumns={['1fr', '1fr', '1fr 1fr']} gap={3}>
         {filteredSvgs.length === 0 && (
-          <Box sx={{ gridColumn: '1 / -1', p: 4, border: '1px solid', borderColor: 'border.default', borderRadius: 2, bg: 'canvas.subtle' }}>
+          <Card variant="subtle" border shadow="none" gridColumn="1 / -1" p={4}>
             <Text sx={{ color: 'fg.muted' }}>No SVG matches this filter in the current segment.</Text>
-          </Box>
+          </Card>
         )}
         {filteredSvgs.map((entry) => (
           <SvgCard key={entry.name} {...entry} />
