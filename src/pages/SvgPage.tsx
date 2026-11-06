@@ -22,6 +22,7 @@ import { SvgDla as DlaMark } from '../svg/SvgDla';
 import * as SvgAssets from '../svg';
 import SpitfireAssetUrl from '../svg/images/datalayer-1.3.0-spitfire.svg';
 import BlackSnakeAssetUrl from '../svg/images/datalayer-1.2.0-black-snake.svg';
+import KingKongAssetUrl from '../svg/images/datalayer-king-kong.svg';
 
 type SvgComponent = ElementType;
 
@@ -63,7 +64,12 @@ const LOGO_HOST: BoxProps = {
   overflow: 'hidden',
 };
 
-function SvgSpitfireInline() {
+/**
+ * A release's trace, fetched and tinted from the theme (the Spitfire, the
+ * Black Snake, King Kong): its black ink in the palette's primary on a light
+ * theme and its spark on a dark one, on the palette's background.
+ */
+function TintedSvgInline({ url, label }: { url: string; label: string }) {
   const p = useColorPalette();
   const tint = p.isLight ? p.primary : p.spark;
   const [svgMarkup, setSvgMarkup] = useState<string>('');
@@ -72,7 +78,7 @@ function SvgSpitfireInline() {
     let cancelled = false;
 
     const loadAndTint = async () => {
-      const response = await fetch(SpitfireAssetUrl);
+      const response = await fetch(url);
       const source = await response.text();
       if (cancelled) {
         return;
@@ -116,11 +122,11 @@ function SvgSpitfireInline() {
     return () => {
       cancelled = true;
     };
-  }, [p.bg, tint]);
+  }, [url, p.bg, tint]);
 
   return (
     <Box
-      aria-label="Spitfire aircraft"
+      aria-label={label}
       width="100%"
       height="100%"
       display="block"
@@ -130,71 +136,16 @@ function SvgSpitfireInline() {
   );
 }
 
+function SvgSpitfireInline() {
+  return <TintedSvgInline url={SpitfireAssetUrl} label="Spitfire aircraft" />;
+}
+
 function SvgBlackSnakeInline() {
-  const p = useColorPalette();
-  const tint = p.isLight ? p.primary : p.spark;
-  const [svgMarkup, setSvgMarkup] = useState<string>('');
+  return <TintedSvgInline url={BlackSnakeAssetUrl} label="Black snake" />;
+}
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const loadAndTint = async () => {
-      const response = await fetch(BlackSnakeAssetUrl);
-      const source = await response.text();
-      if (cancelled) {
-        return;
-      }
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(source, 'image/svg+xml');
-      const svg = doc.querySelector('svg');
-
-      if (!svg) {
-        setSvgMarkup(source);
-        return;
-      }
-
-      svg.setAttribute('width', '100%');
-      svg.setAttribute('height', '100%');
-      svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
-      svg.setAttribute('style', `width:100%;height:100%;display:block;background:${p.bg};color:${tint};`);
-
-      const blackFills = new Set(['#000', '#000000', 'black', 'rgb(0,0,0)']);
-      doc.querySelectorAll('[fill]').forEach((node) => {
-        const fill = (node.getAttribute('fill') || '').replace(/\s+/g, '').toLowerCase();
-        if (blackFills.has(fill)) {
-          node.setAttribute('fill', tint);
-        }
-      });
-
-      doc.querySelectorAll('[stroke]').forEach((node) => {
-        const stroke = (node.getAttribute('stroke') || '').replace(/\s+/g, '').toLowerCase();
-        if (blackFills.has(stroke)) {
-          node.setAttribute('stroke', tint);
-        }
-      });
-
-      const serialized = new XMLSerializer().serializeToString(svg);
-      setSvgMarkup(serialized);
-    };
-
-    loadAndTint().catch(() => setSvgMarkup(''));
-
-    return () => {
-      cancelled = true;
-    };
-  }, [p.bg, tint]);
-
-  return (
-    <Box
-      aria-label="Black snake"
-      width="100%"
-      height="100%"
-      display="block"
-      overflow="hidden"
-      dangerouslySetInnerHTML={{ __html: svgMarkup }}
-    />
-  );
+function SvgKingKongInline() {
+  return <TintedSvgInline url={KingKongAssetUrl} label="King Kong facing a tyrannosaur" />;
 }
 
 function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
@@ -472,6 +423,7 @@ function SvgAvatarOrbThemePreview() {
 const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
   SvgBlackSnake: SvgBlackSnakeInline,
+  SvgKingKong: SvgKingKongInline,
   SvgAI: SvgAIPreview,
   SvgAI2: SvgAI2Preview,
   SvgAI3: SvgAI3Preview,
@@ -551,7 +503,7 @@ const DATALAYER_SVGS: SvgEntry[] = [
   },
 ];
 
-const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake']);
+const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake', 'SvgKingKong']);
 const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
 const LOGO_SVG_NAMES = new Set([
   'SvgAI',

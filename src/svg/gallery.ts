@@ -31,6 +31,7 @@ export const DATALAYER_SVG_GALLERY = [
   'SvgStarsHero',
   'SvgSpitfire',
   'SvgBlackSnake',
+  'SvgKingKong',
   'SvgLinesLogo',
   'SvgOrganizationsAtScale',
   'SvgIndividualsAndTeams',

@@ -38,6 +38,7 @@ export { SvgEventsHero } from './SvgEventsHero';
 export { SvgStarsHero } from './SvgStarsHero';
 export { SvgSpitfire } from './SvgSpitfire';
 export { SvgBlackSnake } from './SvgBlackSnake';
+export { SvgKingKong } from './SvgKingKong';
 export { SvgLinesLogo } from './SvgLinesLogo';
 export { SvgOrganizationsAtScale } from './SvgOrganizationsAtScale';
 export { SvgIndividualsAndTeams } from './SvgIndividualsAndTeams';
