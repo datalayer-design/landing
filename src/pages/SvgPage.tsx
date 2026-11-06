@@ -23,6 +23,7 @@ import * as SvgAssets from '../svg';
 import SpitfireAssetUrl from '../svg/images/datalayer-1.3.0-spitfire.svg';
 import BlackSnakeAssetUrl from '../svg/images/datalayer-1.2.0-black-snake.svg';
 import KingKongAssetUrl from '../svg/images/datalayer-king-kong.svg';
+import KingKong2AssetUrl from '../svg/images/datalayer-king-kong-2.svg';
 
 type SvgComponent = ElementType;
 
@@ -146,6 +147,10 @@ function SvgBlackSnakeInline() {
 
 function SvgKingKongInline() {
   return <TintedSvgInline url={KingKongAssetUrl} label="King Kong facing a tyrannosaur" />;
+}
+
+function SvgKingKong2Inline() {
+  return <TintedSvgInline url={KingKong2AssetUrl} label="A tyrannosaur facing King Kong" />;
 }
 
 function SvgLinesLogo(props?: SVGProps<SVGSVGElement>) {
@@ -424,6 +429,7 @@ const SVG_COMPONENT_OVERRIDES: Record<string, SvgComponent> = {
   SvgSpitfire: SvgSpitfireInline,
   SvgBlackSnake: SvgBlackSnakeInline,
   SvgKingKong: SvgKingKongInline,
+  SvgKingKong2: SvgKingKong2Inline,
   SvgAI: SvgAIPreview,
   SvgAI2: SvgAI2Preview,
   SvgAI3: SvgAI3Preview,
@@ -503,7 +509,7 @@ const DATALAYER_SVGS: SvgEntry[] = [
   },
 ];
 
-const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake', 'SvgKingKong']);
+const RELEASE_SVG_NAMES = new Set(['SvgSpitfire', 'SvgBlackSnake', 'SvgKingKong', 'SvgKingKong2']);
 const SYSTEM_SVG_NAMES = new Set(['SvgNotFound', 'SvgUnauthorized']);
 const LOGO_SVG_NAMES = new Set([
   'SvgAI',
