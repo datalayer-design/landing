@@ -5,7 +5,7 @@
  */
 
 /**
- * King Kong release illustration: the 2005 still traced to one ink (the user's own conversion, 6 November 2026), Kong and the tyrannosaur over Ann.
+ * King Kong release illustration: a 2005 still traced to one ink (the user's own conversion, 6 November 2026), Kong on the left and the tyrannosaur on the right, Ann between them.
  *
  * Keeps the original source artwork unchanged and only recolors it based on
  * the active user theme.
