@@ -88,5 +88,6 @@ export { SvgTermsHero } from './SvgTermsHero';
 export { SvgNotFound } from './SvgNotFound';
 export { SvgUnauthorized } from './SvgUnauthorized';
 export { SvgOg } from './SvgOg';
+export { SvgPoppy1_0 } from './SvgPoppy1_0';
 export { SvgOgStacked } from './SvgOgStacked';
 export { SvgLightHouse } from './SvgLightHouse';
