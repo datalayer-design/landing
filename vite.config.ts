@@ -16,7 +16,6 @@ const dedupe = [
   'react-dom',
   'react/jsx-runtime',
   '@primer/react',
-  '@primer/react-brand',
   '@primer/octicons-react',
   '@primer/primitives',
   'styled-components',
