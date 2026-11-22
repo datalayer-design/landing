@@ -16,10 +16,17 @@ import { Box } from "@datalayer/primer-addons";
 
 type IconComponent = ComponentType<{ size?: number | string }>;
 
+/** A React component: a function, or a `forwardRef` / `memo` object. */
+const isComponent = (value: unknown): boolean =>
+  typeof value === "function" ||
+  (typeof value === "object" && value !== null && "$$typeof" in value);
+
 const IconGrid = lazy(() =>
   import("@datalayer/icons-react").then((module) => {
     const icons = Object.entries(module as Record<string, unknown>)
-      .filter(([name, value]) => name.endsWith("Icon") && typeof value === "function")
+      // Each icon is a `forwardRef` component, an object (a `$$typeof` element
+      // type), not a function: a check for functions alone listed none.
+      .filter(([name, value]) => name.endsWith("Icon") && isComponent(value))
       .map(([name, value]) => [name, value as IconComponent] as const)
       .sort(([a], [b]) => a.localeCompare(b));
     function Grid({ query }: { query: string }) {
