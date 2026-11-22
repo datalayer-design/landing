@@ -137,6 +137,11 @@ export function IconsPage() {
   const view: IconsView = searchParams.get("view") === "viewer" ? "viewer" : "grid";
   const choose = (index: number) => {
     const next = VIEWS[index];
+    // Primer calls onChange for the selected segment too: choosing the view
+    // already shown keeps the address, and the viewer's search (`q`) with it.
+    if (next === view) {
+      return;
+    }
     setSearchParams(
       (current) => {
         const params = new URLSearchParams(current);
