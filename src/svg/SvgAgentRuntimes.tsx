@@ -77,7 +77,7 @@ export function SvgAgentRuntimes({ palette: paletteProp }: { palette?: ColorPale
 
       {/* MCP tool nodes (bottom row) — vivid 5-color */}
       {[
-        { x: 220, y: 350, label: 'Tavily', color: p.blaze, glowId: 'glowBlaze' },
+        { x: 220, y: 350, label: 'Poppy', color: p.blaze, glowId: 'glowBlaze' },
         { x: 340, y: 350, label: 'LinkedIn', color: p.surge, glowId: 'glowSurge' },
         { x: 460, y: 350, label: 'GitHub', color: p.glow, glowId: 'glowVivid' },
         { x: 580, y: 350, label: 'Slack', color: p.spark, glowId: 'glowSpark' },
