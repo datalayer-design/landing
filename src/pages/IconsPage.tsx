@@ -14,11 +14,14 @@
  *   four treatments of each icon with their downloads. Imported when chosen,
  *   so the grid never loads its chunk.
  *
+ * Both are drawn 1200px wide at most and share their search, kept in the
+ * address (`?q=`), so switching view keeps it (the user, 27 November 2026).
+ *
  * It read `@datalayer/icons-all` until 20 November 2026; that package is
  * never published, and design is.
  */
 
-import { Suspense, lazy, useMemo, useState, type ComponentType, type ReactNode } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState, type ComponentType, type ReactNode } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SegmentedControl, Spinner, Text, TextInput } from "@primer/react";
 import { SearchIcon } from "@primer/octicons-react";
@@ -113,10 +116,26 @@ function Loading({ children }: { children: ReactNode }) {
   );
 }
 
+/** The widest the icons are drawn, the grid as the viewer (`@datalayer/icons-react/viewer`). */
+const ICONS_MAX_WIDTH = 1200;
+
+/** The grid, its search kept in the address's `q`, as the viewer's is: switching view keeps it. */
 function IconsGrid() {
-  const [query, setQuery] = useState("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [query, setQuery] = useState(() => searchParams.get("q") ?? "");
+  useEffect(() => {
+    setSearchParams(
+      (current) => {
+        const params = new URLSearchParams(current);
+        if (query.trim()) params.set("q", query.trim());
+        else params.delete("q");
+        return params;
+      },
+      { replace: true },
+    );
+  }, [query, setSearchParams]);
   return (
-    <>
+    <Box display="flex" flexDirection="column" gap={3} width="100%" maxWidth={ICONS_MAX_WIDTH} mx="auto">
       <TextInput
         leadingVisual={SearchIcon}
         placeholder="Search the icons"
@@ -128,7 +147,7 @@ function IconsGrid() {
       <Suspense fallback={<Loading>Loading the icons...</Loading>}>
         <IconGrid query={query} />
       </Suspense>
-    </>
+    </Box>
   );
 }
 
@@ -142,21 +161,16 @@ export function IconsPage() {
     if (next === view) {
       return;
     }
-    setSearchParams(
-      (current) => {
-        const params = new URLSearchParams(current);
-        if (next === "viewer") params.set("view", "viewer");
-        else params.delete("view");
-        // The viewer keeps its search in `q`; the grid has its own.
-        params.delete("q");
-        return params;
-      },
-      { replace: true },
-    );
+    // From the address as shown: the viewer writes its search (`q`) there
+    // itself, unseen by the router. Both views read `q`, so the search stays.
+    const params = new URLSearchParams(window.location.search);
+    if (next === "viewer") params.set("view", "viewer");
+    else params.delete("view");
+    setSearchParams(params, { replace: true });
   };
   return (
     <Box display="flex" flexDirection="column" gap={3} p={4}>
-      <Box alignSelf="flex-start">
+      <Box alignSelf="center" width="100%" maxWidth={ICONS_MAX_WIDTH}>
         <SegmentedControl aria-label="How to show the icons" onChange={choose}>
           {VIEWS.map((option) => (
             <SegmentedControl.Button key={option} selected={view === option}>
