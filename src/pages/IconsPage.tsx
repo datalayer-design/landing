@@ -26,6 +26,7 @@ import { useSearchParams } from "react-router-dom";
 import { SegmentedControl, Spinner, Text, TextInput } from "@primer/react";
 import { SearchIcon } from "@primer/octicons-react";
 import { Box } from "@datalayer/primer-addons";
+import type { SelectedIcon } from "@datalayer/icons-react/viewer";
 
 type IconComponent = ComponentType<{ size?: number | string }>;
 
@@ -56,7 +57,7 @@ const IconGrid = lazy(() =>
         const q = query.trim().toLowerCase();
         return q ? icons.filter(([name]) => name.toLowerCase().includes(q)) : icons;
       }, [query]);
-      const [selected, setSelected] = useState<{ name: string; icon: IconComponent } | null>(null);
+      const [selected, setSelected] = useState<SelectedIcon | null>(null);
       return (
         <>
           <Text as="p" sx={{ color: "fg.muted", fontSize: 1, m: 0 }}>
@@ -76,7 +77,7 @@ const IconGrid = lazy(() =>
               <Box
                 as="button"
                 type="button"
-                onClick={() => setSelected({ name, icon: Icon })}
+                onClick={() => setSelected({ name, icon: Icon as SelectedIcon["icon"] })}
                 aria-label={`${name}: its treatments, code and downloads`}
                 data-icon-tile={name}
                 flex={1}
