@@ -29,6 +29,15 @@ import { Box } from "@datalayer/primer-addons";
 
 type IconComponent = ComponentType<{ size?: number | string }>;
 
+/**
+ * The viewer's own details dialog (`@datalayer/icons-react/viewer`), opened
+ * from a grid tile: the same dialog as a click in the viewer (the user, 28
+ * November 2026). Loaded on the first click.
+ */
+const IconDetailsDialog = lazy(() =>
+  import("@datalayer/icons-react/viewer").then((viewer) => ({ default: viewer.IconDetailsDialog })),
+);
+
 /** A React component: a function, or a `forwardRef` / `memo` object. */
 const isComponent = (value: unknown): boolean =>
   typeof value === "function" ||
@@ -47,6 +56,7 @@ const IconGrid = lazy(() =>
         const q = query.trim().toLowerCase();
         return q ? icons.filter(([name]) => name.toLowerCase().includes(q)) : icons;
       }, [query]);
+      const [selected, setSelected] = useState<{ name: string; icon: IconComponent } | null>(null);
       return (
         <>
           <Text as="p" sx={{ color: "fg.muted", fontSize: 1, m: 0 }}>
@@ -62,9 +72,14 @@ const IconGrid = lazy(() =>
             style={{ listStyle: "none" }}
           >
             {shown.map(([name, Icon]) => (
+              <Box as="li" key={name} display="flex">
               <Box
-                as="li"
-                key={name}
+                as="button"
+                type="button"
+                onClick={() => setSelected({ name, icon: Icon })}
+                aria-label={`${name}: its treatments, code and downloads`}
+                data-icon-tile={name}
+                flex={1}
                 display="flex"
                 flexDirection="column"
                 alignItems="center"
@@ -74,7 +89,9 @@ const IconGrid = lazy(() =>
                 border="1px solid"
                 borderColor="border.default"
                 bg="canvas.default"
+                color="fg.default"
                 title={name}
+                sx={{ cursor: "pointer", font: "inherit", minWidth: 0, "&:hover": { borderColor: "accent.emphasis" } }}
               >
                 <Icon size={32} />
                 <Text
@@ -91,8 +108,14 @@ const IconGrid = lazy(() =>
                   {name}
                 </Text>
               </Box>
+              </Box>
             ))}
           </Box>
+          {selected ? (
+            <Suspense fallback={null}>
+              <IconDetailsDialog selected={selected} onClose={() => setSelected(null)} />
+            </Suspense>
+          ) : null}
         </>
       );
     }
